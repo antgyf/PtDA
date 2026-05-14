@@ -10,27 +10,85 @@ router.get("/", (req: Request, res: Response): void => {
   return;
 });
 
-router.post("/add", async (req: Request, res: Response) => {
-  const { fullname, surgeonid, surgeontitle, sex, ethnicity, age, bmi, height, weight } =
-    req.body;
+router.post("/add", async (req: Request, res: Response): Promise<any> => {
+  const {
+    fullname,
+    sex,
+    ethnicity,
+    age,
+    bmi,
+    height,
+    weight,
+    bmicategory,
+    agegroup,
+  } = req.body;
+
+  if (
+    !fullname ||
+    sex === undefined ||
+    ethnicity === undefined ||
+    age === undefined ||
+    bmi === undefined ||
+    height === undefined ||
+    weight === undefined ||
+    bmicategory === undefined ||
+    agegroup === undefined
+  ) {
+    return res.status(400).json({
+      message: "Missing required patient fields.",
+    });
+  }
 
   try {
-    // Insert patient data into the database
     const result = await pool.query(
-      `INSERT INTO patient (fullname, sex, ethnicity, age, bmi, height, weight)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
-         RETURNING patientid, fullname, sex, ethnicity, age, bmi, height, weight;`,
-      [fullname, sex, ethnicity, age, bmi, height, weight]
+      `
+      INSERT INTO patient (
+        fullname,
+        sex,
+        ethnicity,
+        age,
+        height,
+        weight,
+        bmi,
+        bmicategory,
+        agegroup
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING 
+        patientid,
+        fullname,
+        sex,
+        ethnicity,
+        age,
+        height,
+        weight,
+        bmi,
+        bmicategory,
+        agegroup,
+        hasform;
+      `,
+      [
+        fullname,
+        sex,
+        ethnicity,
+        age,
+        height,
+        weight,
+        bmi,
+        bmicategory,
+        agegroup,
+      ]
     );
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Patient added successfully",
       patient: result.rows[0],
     });
   } catch (error) {
     console.error("Error adding patient:", error);
-    res.status(500).json({ message: "Internal server error", error });
-    return;
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 });
 
@@ -44,6 +102,8 @@ router.put("/edit", async (req: Request, res: Response): Promise<any> => {
     bmi,
     height,
     weight,
+    bmicategory,
+    agegroup
   } = req.body;
 
   try {
@@ -56,10 +116,10 @@ router.put("/edit", async (req: Request, res: Response): Promise<any> => {
     const result = await pool.query(
       `UPDATE patient
        SET fullname = $1, sex = $2, ethnicity = $3, 
-           age = $4, bmi = $5, height = $6, weight = $7
-       WHERE patientid = $8
-       RETURNING patientid, fullname, sex, ethnicity, age, bmi, height, weight;`,
-      [fullname, sex, ethnicity, age, bmi, height, weight, patientid]
+           age = $4, bmi = $5, height = $6, weight = $7, bmicategory = $8, agegroup = $9
+       WHERE patientid = $10
+       RETURNING patientid, fullname, sex, ethnicity, age, bmi, height, weight, bmicategory, agegroup;`,
+      [fullname, sex, ethnicity, age, bmi, height, weight, bmicategory, agegroup, patientid]
     );
 
     // If no rows were updated, return an error

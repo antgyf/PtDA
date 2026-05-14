@@ -11,7 +11,7 @@ const app: Application = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://precedetka.netlify.app",
+  "https://precede-ptda.netlify.app",
 ];
 
 app.use(
