@@ -103,37 +103,88 @@ router.put("/edit", async (req: Request, res: Response): Promise<any> => {
     height,
     weight,
     bmicategory,
-    agegroup
+    agegroup,
   } = req.body;
 
-  try {
-    // Ensure ID is provided
-    if (!patientid) {
-      return res.status(400).json({ message: "Patient ID is required." });
-    }
+  if (!patientid) {
+    return res.status(400).json({
+      message: "Patient ID is required.",
+    });
+  }
 
-    // Update patient data in the database
+  if (
+    !fullname ||
+    sex === undefined ||
+    ethnicity === undefined ||
+    age === undefined ||
+    bmi === undefined ||
+    height === undefined ||
+    weight === undefined ||
+    bmicategory === undefined ||
+    agegroup === undefined
+  ) {
+    return res.status(400).json({
+      message: "Missing required patient fields.",
+    });
+  }
+
+  try {
     const result = await pool.query(
-      `UPDATE patient
-       SET fullname = $1, sex = $2, ethnicity = $3, 
-           age = $4, bmi = $5, height = $6, weight = $7, bmicategory = $8, agegroup = $9
-       WHERE patientid = $10
-       RETURNING patientid, fullname, sex, ethnicity, age, bmi, height, weight, bmicategory, agegroup;`,
-      [fullname, sex, ethnicity, age, bmi, height, weight, bmicategory, agegroup, patientid]
+      `
+      UPDATE patient
+      SET
+        fullname = $1,
+        sex = $2,
+        ethnicity = $3,
+        age = $4,
+        height = $5,
+        weight = $6,
+        bmi = $7,
+        bmicategory = $8,
+        agegroup = $9
+      WHERE patientid = $10
+      RETURNING
+        patientid,
+        fullname,
+        sex,
+        ethnicity,
+        age,
+        height,
+        weight,
+        bmi,
+        bmicategory,
+        agegroup,
+        hasform;
+      `,
+      [
+        fullname,
+        sex,
+        ethnicity,
+        age,
+        height,
+        weight,
+        bmi,
+        bmicategory,
+        agegroup,
+        patientid,
+      ]
     );
 
-    // If no rows were updated, return an error
     if (result.rowCount === 0) {
-      return res.status(404).json({ message: "Patient not found." });
+      return res.status(404).json({
+        message: "Patient not found.",
+      });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Patient updated successfully",
       patient: result.rows[0],
     });
   } catch (error) {
     console.error("Error updating patient:", error);
-    res.status(500).json({ message: "Internal server error", error });
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 });
 
@@ -143,9 +194,11 @@ interface AddPatientRequest {
   sex: number;
   ethnicity: number;
   age: number;
-  bmi: number;
   height: number;
   weight: number;
+  bmi: number;
+  bmicategory: number;
+  agegroup: number;
 }
 
 router.get("/searchByName", async (req: Request, res: Response) => {
