@@ -3,9 +3,11 @@ export interface AddPatientForm {
   sex: string;
   ethnicity: string;
   age: string;
-  bmi: string;
   height?: string;
   weight?: string;
+  bmi: string;
+  bmicategory: string;
+  agegroup: string;
 }
 
 export const Sex: Record<string, string> = {
@@ -19,24 +21,20 @@ export const SexCh: Record<string, string> = {
 };
 
 export const Age = {
-  0: "Below 65 years",
-  1: "65 years and above",
+  0: "Between 21 and 50 years",
+  1: "51 years and above",
 };
 
 export const Ethnicity: Record<string, string> = {
   0: "Chinese",
   1: "Malay",
   2: "Indian",
-  3: "Caucasian",
-  4: "Others"
 };
 
 export const EthnicityCh: Record<string, string> = {
   0: "华人",
   1: "马来人",
   2: "印度人",
-  3: "高加索人",
-  4: "其他"
 };
 
 export const BMI = {
@@ -44,74 +42,15 @@ export const BMI = {
   1: "Overweight/Obese (>= 25)",
 };
 
-export const SurgeonTitle: Record<string, string> = {
-  AC: "Associate Consultant",
-  C: "Consultant",
-  AP: "Associate Professor",
-  P: "Professor",
-  O: "Other",
+export const BMICategory: Record<string, string> = {
+  0: "Normal/Underweight (< 25)",
+  1: "Overweight/Obese (>= 25)",
 };
 
 export type FilterType = {
   age?: { range: number };
   bmi?: { range: number };
-  surgeonid?: string;
-  surgeontitle?: string;
   categories: string[];
-};
-
-export const FunctionWalking = {
-  0: "Unlimited",
-  1: ">2 bus-stops",
-  2: "1-2 bus-stops ",
-  3: "1 bus-stop",
-  4: "Housebound",
-  5: "Unable",
-};
-
-export const FunctionWalkingCh = {
-  0: "无任何限制",
-  1: "超过2个巴士站",
-  2: "1到2个巴士站",
-  3: "1个巴士站",
-  4: "仅限室内活动",
-  5: "不能走路",
-};
-
-export const FunctionStairs = {
-  0: "Normal up and down",
-  1: "Normal up and down with rail",
-  2: "Up and down with rail",
-  3: "Up with rail, down unable ",
-  4: "Unable",
-};
-
-export const FunctionStairsCh = {
-  0: "正常上下楼梯",
-  1: "正常上楼，下楼梯需扶栏杆",
-  2: "上下楼梯都需扶栏杆",
-  3: "借助扶手能上楼，但不能下楼",
-  4: "完全不能上下楼梯",
-}
-
-export const Pain = {
-  0: "None ",
-  1: "Mild / Occasional",
-  2: "Mild (Stairs only)",
-  3: "Mild (Walking and Stairs)",
-  4: "Moderate - Occasional",
-  5: "Moderate - Continual",
-  6: "Severe",
-};
-
-export const PainCh = {
-  0: "不疼",
-  1: "轻微/偶尔疼痛",
-  2: "轻微(仅上下楼梯时)疼痛",
-  3: "轻微(平地行走时也)疼痛",
-  4: "适中-偶尔疼痛",
-  5: "适中-持续疼痛",
-  6: "严重疼痛",
 };
 
 export const Mobility = {
@@ -120,14 +59,6 @@ export const Mobility = {
   2: "I have moderate problems in walking about",
   3: "I have severe problems in walking about",
   4: "I am unable to walk",
-};
-
-export const MobilityCh = {
-  0: "无疼痛",
-  1: "极轻微疼痛",
-  2: "轻微疼痛",
-  3: "中等疼痛",
-  4: "严重疼痛",
 };
 
 export const SelfCare = {
@@ -162,156 +93,236 @@ export const AnxietyDepression = {
   4: "I am extremely anxious or depressed",
 };
 
-export const OKSKneePain = {
-  0: "None",
-  1: "Very mild",
-  2: "Mild",
-  3: "Moderate",
-  4: "Severe",
+export const MobilityCh = {
+  0: "我四处走动没有困难",
+  1: "我四处走动有一点困难",
+  2: "我四处走动有中度的困难",
+  3: "我四处走动有严重的困难",
+  4: "我无法四处走动"
 };
 
-export const OKSKneePainCh = {
-  0: "无疼痛",
-  1: "极轻微疼痛",
-  2: "轻微疼痛",
-  3: "中等疼痛",
-  4: "严重疼痛",
-}
-
-export const OKSKneeTrouble = {
-  0: "No trouble at all",
-  1: "Very little trouble",
-  2: "Moderate trouble",
-  3: "Extreme difficulty",
-  4: "Impossible to do",
+export const SelfCareCh = {
+  0: "我自己洗澡或穿衣没有困难",
+  1: "我自己洗澡或穿衣有一点困难",
+  2: "我自己洗澡或穿衣有中度的困难",
+  3: "我自己洗澡或穿衣有严重的困难",
+  4: "我无法自己洗澡或穿衣"
 };
 
-export const OKSCarTroubleCh = {
-  0: "完全无困难",
-  1: "一点点困难",
-  2: "有些困难",
-  3: "非常困难",
-  4: "无法上下车或使用公共交通",
+export const UsualActivitiesCh = {
+  0: "我进行日常活动没有困难",
+  1: "我进行日常活动有一点困难",
+  2: "我进行日常活动有中度的困难",
+  3: "我进行日常活动有严重的困难",
+  4: "我无法进行日常活动"
 };
 
-export const chOKSWashingTrouble = {
-  0: "完全无困难",
-  1: "一点点困难",
-  2: "有些困难",
-  3: "非常困难",
-  4: "无法洗澡或擦干身体",
-}
-
-export const OKSWalking = {
-  0: "No pain/More than 30 mins",
-  1: "16-30 mins",
-  2: "5-15 mins",
-  3: "Around the house only",
-  4: "Not at all/Pain severe when walking",
+export const PainDiscomfortCh = {
+  0: "我没有疼痛或不舒服",
+  1: "我有一点疼痛或不舒服",
+  2: "我有中度的疼痛或不舒服",
+  3: "我有严重的疼痛或不舒服",
+  4: "我有非常严重的疼痛或不舒服"
 };
 
-export const OKSWalkingCh = {
-  0: "无疼痛/超过30分钟",
-  1: "16到30分钟",
-  2: "5到15分钟",
-  3: "只能在家周围活动",
-  4: "完全无法走路/一走路就疼痛",
+export const AnxietyDepressionCh = {
+  0: "我没有焦虑或沮丧",
+  1: "我有一点焦虑或沮丧",
+  2: "我有中度的焦虑或沮丧",
+  3: "我有严重的焦虑或沮丧",
+  4: "我有非常严重的焦虑或沮丧"
 };
 
-export const OKSStanding = {
-  0: "Not at all painful",
-  1: "Slightly painful",
-  2: "Moderately painful",
-  3: "Very painful",
-  4: "Unbearable",
+export const Breathing = {
+  0: "I have no breathing problems",
+  1: "I have slight breathing problems",
+  2: "I have moderate breathing problems",
+  3: "I have severe breathing problems",
+  4: "I have extreme breathing problems"
 };
 
-export const OKSStandingCh = {
-  0: "完全无困难",
-  1: "一点点困难",
-  2: "有些困难",
-  3: "非常困难",
-  4: "难以忍受的疼痛",
+export const Sleep = {
+  0: "I have no problems sleeping",
+  1: "I have slight problems sleeping",
+  2: "I have moderate problems sleeping",
+  3: "I have severe problems sleeping",
+  4: "I have extreme problems sleeping"
 };
 
-export const OKSFrequency = {
-  0: "Rarely/Never",
-  1: "Sometimes, just at first",
-  2: "Often, not just at first",
-  3: "Most of the time",
-  4: "All of the time",
+export const Tiredness = {
+  0: "I am not tired",
+  1: "I am slightly tired",
+  2: "I am moderately tired",
+  3: "I am severely tired",
+  4: "I am extremely tired"
 };
 
-export const OKSFrequencyCh = {
-  0: "很少/从来没有",
-  1: "有时，或刚开始时",
-  2: "经常，不是只有刚开始时",
-  3: "大部分时间",
-  4: "一直跛行（一瘸一拐）",
+export const PhysicalAppearance = {
+  0: "I have no problems accepting my physical appearance",
+  1: "I have slight problems accepting my physical appearance",
+  2: "I have moderate problems accepting my physical appearance",
+  3: "I have severe problems accepting my physical appearance",
+  4: "I have extreme problems accepting my physical appearance"
 };
 
-export const OKSEase = {
-  0: "Yes, easily",
-  1: "With little difficulty",
-  2: "With moderate difficulty",
-  3: "With extreme difficulty",
-  4: "No, impossible",
+export const IntimateRelationship = {
+  0: "I have no problems building or keeping an intimate relationship",
+  1: "I have slight problems building or keeping an intimate relationship",
+  2: "I have moderate problems building or keeping an intimate relationship",
+  3: "I have severe problems building or keeping an intimate relationship",
+  4: "I have extreme problems building or keeping an intimate relationship"
 };
 
-export const OKSKneelingCh = {
-  0: "可以，容易完成",
-  1: "一点点困难",
-  2: "有些困难",
-  3: "非常困难",
-  4: "无法完成",
+export const DiscriminationHumiliation = {
+  0: "I am not discriminated or humiliated",
+  1: "I am slightly discriminated or humiliated",
+  2: "I am moderately discriminated or humiliated",
+  3: "I am severely discriminated or humiliated",
+  4: "I am extremely discriminated or humiliated"
 };
 
-export const OKSNightPain = {
-  0: "No nights",
-  1: "Only 1 or 2 nights",
-  2: "Some nights",
-  3: "Most nights",
-  4: "Every night",
+export const SocialActivities = {
+  0: "I have no problems participating in social activities",
+  1: "I have slight problems participating in social activities",
+  2: "I have moderate problems participating in social activities",
+  3: "I have severe problems participating in social activities",
+  4: "I have extreme problems participating in social activities"
 };
 
-export const OKSNightPainCh = {
-  0: "从未感到困扰",
-  1: "仅1到2晚",
-  2: "有一些夜晚",
-  3: "大部分夜晚",
-  4: "每晚都感到困扰",
+export const SelfConfidence = {
+  0: "I am confident about myself",
+  1: "I am slightly unconfident about myself",
+  2: "I am moderately unconfident about myself",
+  3: "I am very unconfident about myself",
+  4: "I am extremely unconfident about myself"
 };
 
-export const OKSWorkInterference = {
-  0: "Not at all",
-  1: "A little bit",
-  2: "Moderately",
-  3: "Greatly",
-  4: "Totally",
+export const BurdenToOthers = {
+  0: "I do not burden others",
+  1: "I slightly burden others",
+  2: "I moderately burden others",
+  3: "I severely burden others",
+  4: "I extremely burden others"
 };
 
-export const OKSWorkInterferenceCh = {
-  0: "完全不影响",
-  1: "一点点影响",
-  2: "有些影响",
-  3: "很大影响",
-  4: "完全无法工作或做家务",
+export const DietControl = {
+  0: "I have no problems with diet control",
+  1: "I have slight problems with diet control",
+  2: "I have moderate problems with diet control",
+  3: "I have severe problems with diet control",
+  4: "I have extreme problems with diet control"
 };
 
-export const GiveWayCh = {
-  0: "几乎没有/从来没有",
-  1: "有时，或者只有刚开始时",
-  2: "经常，不是只有刚开始时",
-  3: "大部分时间",
-  4: "一直如此",
+export const FoodEnjoyment = {
+  0: "I have no problems enjoying food",
+  1: "I have slight problems enjoying food",
+  2: "I have moderate problems enjoying food",
+  3: "I have severe problems enjoying food",
+  4: "I have extreme problems enjoying food"
 };
 
-export const OKSEaseCh = {
-  0: "能，很容易",
-  1: "一点点困难",
-  2: "有些困难",
-  3: "非常困难",
-  4: "不可能做到",
+export const GastrointestinalProblems = {
+  0: "I have no gastrointestinal problems",
+  1: "I have slight gastrointestinal problems",
+  2: "I have moderate gastrointestinal problems",
+  3: "I have severe gastrointestinal problems",
+  4: "I have extreme gastrointestinal problems"
+};
+
+export const BreathingCh = {
+  0: "我呼吸没有问题",
+  1: "我呼吸稍微有点问题",
+  2: "我呼吸有些问题",
+  3: "我呼吸有严重的问题",
+  4: "我呼吸有非常严重的问题"
+};
+
+export const SleepCh = {
+  0: "我的睡眠没有问题",
+  1: "我的睡眠稍微有点问题",
+  2: "我的睡眠有些问题",
+  3: "我的睡眠有严重的问题",
+  4: "我的睡眠有非常严重的问题"
+};
+
+export const TirednessCh = {
+  0: "我不疲劳",
+  1: "我稍微有点疲劳",
+  2: "我有些疲劳",
+  3: "我非常疲劳",
+  4: "我极度疲劳"
+};
+
+export const PhysicalAppearanceCh = {
+  0: "我能接受我的外貌",
+  1: "我稍微有点难以接受我的外貌",
+  2: "我有些难以接受我的外貌",
+  3: "我很难接受我的外貌",
+  4: "我极难接受我的外貌"
+};
+
+export const IntimateRelationshipCh = {
+  0: "我在开始或维持亲密关系方面没有问题",
+  1: "我在开始或维持亲密关系方面稍微有点问题",
+  2: "我在开始或维持亲密关系方面有些问题",
+  3: "我在开始或维持亲密关系方面有严重的问题",
+  4: "我在开始或维持亲密关系方面有非常严重的问题"
+};
+
+export const DiscriminationHumiliationCh = {
+  0: "我没有受到歧视或侮辱",
+  1: "我稍微有点受到歧视或侮辱",
+  2: "我有些受到歧视或侮辱",
+  3: "我严重受到歧视或侮辱",
+  4: "我极度受到歧视或侮辱"
+};
+
+export const SocialActivitiesCh = {
+  0: "我参加社交活动没有困难",
+  1: "我参加社交活动稍微有点困难",
+  2: "我参加社交活动有些困难",
+  3: "我参加社交活动有严重的困难",
+  4: "我参加社交活动有非常严重的困难"
+};
+
+export const SelfConfidenceCh = {
+  0: "我有自信",
+  1: "我稍微有点不自信",
+  2: "我有些不自信",
+  3: "我非常不自信",
+  4: "我极度不自信"
+};
+
+export const BurdenToOthersCh = {
+  0: "我没有给别人带来负担",
+  1: "我给别人带来轻微的负担",
+  2: "我给别人带来一些负担",
+  3: "我给别人带来严重的负担",
+  4: "我给别人带来非常严重的负担"
+};
+
+export const DietControlCh = {
+  0: "我能控制饮食",
+  1: "我稍微有点难以控制饮食",
+  2: "我有些难以控制饮食",
+  3: "我很难控制饮食",
+  4: "我极难控制饮食"
+};
+
+export const FoodEnjoymentCh = {
+  0: "我能享受食物",
+  1: "我稍微有点难以享受食物",
+  2: "我有些难以享受食物",
+  3: "我很难享受食物",
+  4: "我极难享受食物"
+};
+
+export const GastrointestinalProblemsCh = {
+  0: "我的肠胃没有问题",
+  1: "我的肠胃稍微有点问题",
+  2: "我的肠胃有些问题",
+  3: "我的肠胃有严重的问题",
+  4: "我的肠胃有非常严重的问题"
 };
 
 export const OtherOptions = {
@@ -331,52 +342,46 @@ export const TopFiveAreas = {
 };
 
 export const AllOptions = [
-  "KFS",        // Function stairs
-  "KFW",        // Function walking
-  "KPAIN",      // Knee pain overall
   "EQ5D-MOB",   // Mobility
   "EQ5D-SC",    // Self-care
   "EQ5D-UA",    // Usual activities
   "EQ5D-PD",    // Pain/discomfort
   "EQ5D-AD",    // Anxiety/depression
-  "OKS1",
-  "OKS2",
-  "OKS3",
-  "OKS4",
-  "OKS5",
-  "OKS6",
-  "OKS7",
-  "OKS8",
-  "OKS9",
-  "OKS10",
-  "OKS11",
-  "OKS12",
+  "BO-BREATHING",
+  "BO-SLEEP",
+  "BO-TIREDNESS",
+  "BO-APPEARANCE",
+  "BO-ROMANTIC-INTIMATE",
+  "BO-DISCRIMINATE-HUMIL",
+  "BO-SOCIAL-ACTIVITIES",
+  "BO-CONFIDENCE",
+  "BO-BURDEN-OTHERS",
+  "BO-DIET-CONTROL",
+  "BO-FOOD-ENJOYMENT",
+  "BO-GI-PROBLEMS"
 ] as const; // Use `as const` to make the array readonly and infer literal types
 
 export type AllOptionsType = (typeof AllOptions)[number]; // Create a union type from the array
 
 // Human-readable names (labels for UI)
 export const AllOptionNames = [
-  "Function stairs",
-  "Function walking",
-  "Knee pain overall",
   "EQ-5D: Mobility",
   "EQ-5D: Self-care",
   "EQ-5D: Usual activities",
   "EQ-5D: Pain/discomfort",
   "EQ-5D: Anxiety/depression",
-  "How would you describe the pain you usually have from your knee?",
-  "Have you had any trouble with washing and drying yourself (all over) because of your knee?",
-  "Have you had any trouble getting in and out of a car or using public transport because of your knee? (whichever you tend to use)",
-  "For how long have you been able to walk before pain from your knee becomes severe? (with or without a stick)",
-  "After a meal (sat at a table), how painful has it been for you to stand up from a chair because of your knee?",
-  "Have you been limping when walking, because of your knee?",
-  "Could you kneel down and get up again afterwards?",
-  "Have you been troubled by pain from your knee in bed at night?",
-  "How much has pain from your knee interfered with your usual work (including housework)?",
-  "Have you felt that your knee might suddenly 'give way' or let you down?",
-  "Could you do the household shopping on your own?",
-  "Could you walk down one flight of stairs?",
+  "Breathing problems (e.g. shortness of breath, wheezing, coughing, sputum)",
+  "Sleep",
+  "Tiredness",
+  "Physical Appearance (e.g. overall appearance, body shape, skin, etc...)",
+  "Building or keeping intimate relationships (including sexual relationship)",
+  "Discrimination / Humiliation",
+  "Social Activities (e.g. meeting, eating, or doing work with others)",
+  "Self-confidence",
+  "Burden to Others",
+  "Diet Control (e.g. control food portion and type of food)",
+  "Food Enjoyment",
+  "Gastrointestinal Problems (e.g. nausea, vomiting, heartburn, bloating, gases, diarrhoea, constipation)",
 ] as const;
 
 export type AllOptionNamesType = (typeof AllOptionNames)[number];
@@ -395,28 +400,23 @@ export type QuestionType = {
 
 // Actual questions list aligned with DB
 export const Questions: QuestionType[] = [
-  { id: 1, code: "KFS", question: "How well can you use stairs?", list: FunctionStairs, description: "Ability to use stairs" , chQuestion: "您能上下楼梯吗？", chineseDescription: "上下楼梯的能力", chList: FunctionStairsCh},
-  { id: 2, code: "KFW", question: "How far can you walk?", list: FunctionWalking, description: "Ability to walk" , chQuestion: "您能持续走路多久？", chineseDescription: "持续走路的能力", chList: FunctionWalkingCh},
-  { id: 3, code: "KPAIN", question: "How is your overall knee pain?", list: Pain, description: "Overall knee pain", chQuestion: "您的膝关节疼痛程度如何？", chineseDescription: "膝关节疼痛程度", chList: PainCh },
-  /*
-  { id: 4, code: "EQ5D-MOB", question: "Did you have problems in walking about today?", list: Mobility, description: "Problems in walking" },
-  { id: 5, code: "EQ5D-SC", question: "Did you have problems in washing or dressing yourself today?", list: SelfCare, description: "Problems washing or dressing yourself" },
-  { id: 6, code: "EQ5D-UA", question: "Did you have problems in doing your usual activities today? (e.g. work, study, housework, family or leisure activities)", list: UsualActivities, description: "Problems doing your usual activities (e.g. work, study, housework, family or leisure activities)" },
-  { id: 7, code: "EQ5D-PD", question: "Did you have any pain/discomfort today?", list: PainDiscomfort, description: "Pain/discomfort level" },
-  { id: 8, code: "EQ5D-AD", question: "Do you feel anxious/depressed today?", list: AnxietyDepression, description: "Anxiety/depression level" },
-  */  
-  { id: 9, code: "OKS1", question: "How would you describe the pain you usually have from your knee?", list: OKSKneePain, description: "Knee pain severity", chQuestion: "您如何描述膝关节通常的疼痛?", chineseDescription: "膝盖日常疼痛程度", chList: OKSKneePainCh },
-  { id: 10, code: "OKS2", question: "Have you had any trouble with washing and drying yourself (all over) because of your knee?", list: OKSKneeTrouble, description: "Difficulty with washing and drying yourself because of your knee" , chQuestion: "您是否因为膝关节问题在洗澡或擦干身体时感到困难？", chineseDescription: "洗澡/擦身困难", chList: chOKSWashingTrouble },
-  { id: 11, code: "OKS3", question: "Have you had any trouble getting in and out of a car or using public transport because of your knee? (whichever you tend to use)", list: OKSKneeTrouble, description: "Difficulty getting in and out of a car or bus because of your knee", chQuestion: "您是否因为膝关节问题在上下车或使用公共交通时感到困难？", chineseDescription: "上下车/乘车困难", chList: OKSCarTroubleCh },
-  { id: 12, code: "OKS4", question: "For how long have you been able to walk before pain from your knee becomes severe? (with or without a stick)", list: OKSWalking, description: "Walking duration before knee pain becomes severe", chQuestion: "您走路多久之后膝关节疼痛会变得严重（用或不用拐杖)？", chineseDescription: "发生疼痛前能走多久", chList: OKSWalkingCh },
-  { id: 13, code: "OKS5", question: "After a meal (sat at a table), how painful has it been for you to stand up from a chair because of your knee?", list: OKSStanding, description: "Difficulty with standing up from a chair", chQuestion: "在吃完饭后（坐在餐桌旁），因为膝关节问题，您从椅子上站起来时有多痛？", chineseDescription: "站起时的疼痛程度", chList: OKSStandingCh },
-  { id: 14, code: "OKS6", question: "Have you been limping when walking, because of your knee?", list: OKSFrequency, description: "Limping because of your knee", chQuestion: "您走路时是否因为膝关节问题而跛行（一瘸一拐）？", chineseDescription: "跛行（一瘸一拐）", chList: OKSFrequencyCh },
-  { id: 15, code: "OKS7", question: "Could you kneel down and get up again afterwards?", list: OKSEase, description: "Difficulty with kneeling down and getting up again", chQuestion: "您能跪下后又站起来吗？", chineseDescription: "跪下再起身的能力", chList: OKSKneelingCh },
-  { id: 16, code: "OKS8", question: "Have you been troubled by pain from your knee in bed at night?", list: OKSNightPain, description: "Knee pain at night", chQuestion: "您晚上睡觉时是否因为膝关节疼痛而感到困扰？", chineseDescription: "膝盖夜间疼痛影响睡眠", chList: OKSNightPainCh },
-  { id: 17, code: "OKS9", question: "How much has pain from your knee interfered with your usual work (including housework)?", list: OKSWorkInterference, description: "Work interference by knee pain", chQuestion: "膝关节疼痛对您的日常工作（包括家务活）有多大的影响？", chineseDescription: "膝盖疼痛影响日常工作", chList: OKSWorkInterferenceCh },
-  { id: 18, code: "OKS10", question: "Have you felt that your knee might suddenly 'give way' or let you down?", list: OKSFrequency, description: "Feeling knee suddenly 'giving way' or letting you down", chQuestion: "您曾感到膝关节会突然 “打软” 或让你跌倒吗？", chineseDescription: "膝盖突然无力", chList: GiveWayCh },
-  { id: 19, code: "OKS11", question: "Could you do the household shopping on your own?", list: OKSEase, description: "Ability to do household shopping", chQuestion: "您可以自己去买东西吗？", chineseDescription: "自己去买东西的能力", chList: OKSEaseCh },
-  { id: 20, code: "OKS12", question: "Could you walk down one flight of stairs?", list: OKSEase, description: "Ability to walk down stairs", chQuestion: "您能往下走一层楼梯吗？", chineseDescription: "下楼梯的能力", chList: OKSEaseCh },
+  { id: 1, code: "EQ5D-MOB", question: "Did you have problems in walking about today?", list: Mobility, description: "Problems in walking", chQuestion: "我四处走动没有困难", chineseDescription: "行走问题", chList: MobilityCh },
+  { id: 2, code: "EQ5D-SC", question: "Did you have problems in washing or dressing yourself today?", list: SelfCare, description: "Problems washing or dressing yourself", chQuestion: "我自己洗澡或穿衣没有困难", chineseDescription: "洗澡或穿衣的问题", chList: SelfCareCh },
+  { id: 3, code: "EQ5D-UA", question: "Did you have problems in doing your usual activities today? (e.g. work, study, housework, family or leisure activities)", list: UsualActivities, description: "Problems doing your usual activities (e.g. work, study, housework, family or leisure activities)", chQuestion: "我进行日常活动没有困难", chineseDescription: "日常活动的问题", chList: UsualActivitiesCh },
+  { id: 4, code: "EQ5D-PD", question: "Did you have any pain/discomfort today?", list: PainDiscomfort, description: "Pain/discomfort level", chQuestion: "我没有疼痛或不舒服", chineseDescription: "疼痛/不适程度", chList: PainDiscomfortCh },
+  { id: 5, code: "EQ5D-AD", question: "Do you feel anxious/depressed today?", list: AnxietyDepression, description: "Anxiety/depression level", chQuestion: "我没有焦虑或沮丧", chineseDescription: "焦虑/抑郁程度", chList: AnxietyDepressionCh }, 
+  { id: 6, code: "BO-BREATHING", question: "Did you experience any breathing problems today? (e.g. shortness of breath, wheezing, coughing, sputum)", list: Breathing, description: "Breathing problems", chQuestion: "今天您有呼吸问题吗？（例如呼吸急促、喘息、咳嗽、痰多等）", chineseDescription: "呼吸问题", chList: BreathingCh },
+  { id: 7, code: "BO-SLEEP", question: "Did you have problems sleeping today?", list: Sleep, description: "Sleeping problems", chQuestion: "今天您有睡眠问题吗？", chineseDescription: "睡眠问题", chList: SleepCh },
+  { id: 8, code: "BO-TIREDNESS", question: "Did you feel tired today?", list: Tiredness, description: "Tiredness level", chQuestion: "今天您感到疲劳吗？", chineseDescription: "疲劳程度", chList: TirednessCh },
+  { id: 9, code: "BO-APPEARANCE", question: "Did you have any problems accepting your physical appearance today?", list: PhysicalAppearance, description: "Acceptance of physical appearance", chQuestion: "今天您能接受自己的外貌吗？", chineseDescription: "外貌接受度", chList: PhysicalAppearanceCh },
+  { id: 10, code: "BO-ROMANTIC-INTIMATE", question: "Did you have any problems building or keeping an intimate relationship today?", list: IntimateRelationship, description: "Intimate relationship issues", chQuestion: "今天您在建立或维持亲密关系方面有问题吗？", chineseDescription: "亲密关系问题", chList: IntimateRelationshipCh },
+  { id: 11, code: "BO-DISCRIMINATE-HUMIL", question: "Did you experience discrimination or humiliation today?", list: DiscriminationHumiliation, description: "Discrimination or humiliation", chQuestion: "今天您有受到歧视或侮辱吗？", chineseDescription: "歧视或侮辱", chList:  DiscriminationHumiliationCh },
+  { id: 12, code: "BO-SOCIAL-ACTIVITIES", question: "Did you have any problems participating in social activities today?", list: SocialActivities, description: "Social activity participation", chQuestion: "今天您参加社交活动有问题吗？", chineseDescription: "社交活动问题", chList: SocialActivitiesCh },
+  { id: 13, code: "BO-CONFIDENCE", question: "Did you feel confident about yourself today?", list: SelfConfidence, description: "Self-confidence level", chQuestion: "今天您对自己有信心吗？", chineseDescription: "自信程度", chList: SelfConfidenceCh },
+  { id: 14, code: "BO-BURDEN-OTHERS", question: "Did you feel you were a burden to others today?", list: BurdenToOthers, description: "Burden to others", chQuestion: "今天您觉得自己对别人是负担吗？", chineseDescription: "给他人带来的负担", chList: BurdenToOthersCh },
+  { id: 15, code: "BO-DIET-CONTROL", question: "Did you have any problems with controlling your diet today?", list: DietControl, description: "Diet control issues", chQuestion: "今天您在控制饮食方面有问题吗？", chineseDescription: "饮食控制问题", chList: DietControlCh },
+  { id: 16, code: "BO-FOOD-ENJOYMENT", question: "Did you enjoy food today?", list: FoodEnjoyment, description: "Food enjoyment", chQuestion: "今天您享受食物吗？", chineseDescription: "食物享受", chList: FoodEnjoymentCh },
+  { id: 17, code: "BO-GI-PROBLEMS", question: "Did you experience any gastrointestinal problems today? (e.g. nausea, vomiting, heartburn, bloating, gases, diarrhea, constipation)", list: GastrointestinalProblems, description: "Gastrointestinal problems", chQuestion: "今天您有肠胃问题吗？（例如恶心、呕吐、胃灼热、胀气、腹泻、便秘等）", chineseDescription: "肠胃问题", chList: GastrointestinalProblemsCh }
 ];
 
 export type BarChartData = {

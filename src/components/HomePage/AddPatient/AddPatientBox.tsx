@@ -27,9 +27,11 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
     sex: "",
     ethnicity: "",
     age: "",
-    bmi: "",
     height: "",
     weight: "",
+    bmi: "",
+    bmicategory: "",
+    agegroup: ""
   });
 
   // Automatically calculate BMI whenever height or weight changes
@@ -54,11 +56,6 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
       // Return fields that are missing/empty
       return value === "" || value === undefined;
     });
-
-    /*
-    console.log("Surgeon title fetched:", surgeonTitle);
-    console.log("Form data to submit:", { ...form });
-    */
 
     // Show alert if any required field is missing
     if (requiredFields.length > 0) {
@@ -89,9 +86,11 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
         sex: "",
         ethnicity: "",
         age: "",
-        bmi: "",
         height: "",
-        weight: ""
+        weight: "",
+        bmi: "",
+        bmicategory: "",
+        agegroup: "",
       });
 
       // Ensure state updates before navigating
@@ -211,6 +210,12 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
               value={form.age}
               placeholder="0 - 120"
             />
+            <TextInput
+              name="agegroup"
+              label="Age Group"
+              value={form.agegroup}
+              disabled
+            />
             <SelectInput
               name="ethnicity"
               label="Ethnicity"
@@ -240,6 +245,12 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
               name="bmi"
               label="Body Mass Index"
               value={form.bmi}
+              disabled
+            />
+            <TextInput
+              name="bmicategory"
+              label="BMI Category"
+              value={form.bmicategory}
               disabled
             />
           </div>

@@ -92,7 +92,7 @@ const LoginPage: React.FC = () => {
     >
       {alert.message && <Alert />}
       <article className="prose prose-xl text-center py-10">
-        <h1 className="my-2">PRECEDE-TKA</h1>
+        <h1 className="my-2">PRECEDE-PtDA</h1>
         <h1>{auth.isSurgeon ? "Surgeon" : "Researcher"} Login</h1>
       </article>
       <form onSubmit={handleSubmitEvent} className="w-full px-2 max-w-sm">

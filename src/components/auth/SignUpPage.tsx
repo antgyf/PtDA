@@ -24,24 +24,6 @@ const SignUpForm: React.FC = () => {
     confirmPassword: "",
   });
 
-  // Fetch available surgeon IDs if user is a surgeon
-  // Not needed anymore, surgeons will create their own accounts
-  /*useEffect(() => {
-    if (auth.isSurgeon) {
-      const fetchAvailableSurgeons = async () => {
-        try {
-          const res = await api.get("/surgeons/available-ids");
-          setAvailableSurgeons(res.data); // expected: array of { surgeonid, surgeontitle }
-        } catch (err) {
-          console.error("Error fetching surgeon IDs:", err);
-          showAlert("Failed to load available surgeon IDs", "error");
-        }
-      };
-      fetchAvailableSurgeons();
-    }
-  }, [auth.isSurgeon]);
-  */
-
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -102,7 +84,7 @@ const SignUpForm: React.FC = () => {
     >
       {alert.message && <Alert />}
       <article className="prose prose-xl text-center py-10 w-full max-w-2xl">
-        <h1 className="my-2">PRECEDE-TKA</h1>
+        <h1 className="my-2">PRECEDE-PtDA</h1>
         <h1>{auth.isSurgeon ? "Surgeon" : "Researcher"} Sign Up</h1>
       </article>
 

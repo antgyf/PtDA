@@ -7,6 +7,8 @@ export interface Patient {
   height: number;
   weight: number;
   bmi: number;
+  bmicategory: number;
+  agegroup: number;
   hasform: boolean;
 }
 

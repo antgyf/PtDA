@@ -55,32 +55,27 @@ CREATE TABLE patient (
     height NUMERIC(5, 2) NOT NULL,
     weight NUMERIC(5, 2) NOT NULL,
     bmi NUMERIC(5, 2) NOT NULL,
+    bmicategory INT NOT NULL,
+    agegroup INT NOT NULL,
     hasform BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- Reference Patient table (patients from dataset)
 CREATE TABLE referencepatient (
-    referencepatientid INT NOT NULL PRIMARY KEY,
-    surgeonid INT NOT NULL,
-    surgeontitle TEXT NOT NULL,
+    referencepatientid SERIAL PRIMARY KEY,
+    participantid TEXT UNIQUE NOT NULL,
     sex INT NOT NULL,
     ethnicity INT NOT NULL,
     age INT NOT NULL,
-    height NUMERIC(5, 2) NOT NULL,
-    weight NUMERIC(5, 2) NOT NULL,
-    bmi NUMERIC(5, 2) NOT NULL,
-    operationdate DATE NOT NULL,
-    simbilateral BOOLEAN NOT NULL DEFAULT FALSE,
-    stagedbilateral BOOLEAN NOT NULL DEFAULT FALSE,
-    orderinstage INT,
-    stageinterval INT,
-    side INT NOT NULL
+    bmicategory INT NOT NULL,
+    agegroup INT NOT NULL,
+    preoperativebmi NUMERIC(5, 2) NOT NULL
 );
 
 -- Question table
 CREATE TABLE question (
     questionid SERIAL PRIMARY KEY,
-    code VARCHAR(20) UNIQUE NOT NULL,
+    code VARCHAR(50) UNIQUE NOT NULL,
     text TEXT NOT NULL
 );
 
@@ -125,196 +120,52 @@ CREATE TABLE patientpriority (
 
 -- Staging Raw Table
 CREATE TABLE stagingraw (
-    pid INT, 
-    simbk INT, 
-    stabk INT, 
-    ordersid INT, 
-    opdate DATE,
-    stabk_int INT, 
-    side TEXT, 
-    weightkg NUMERIC(5, 2), 
-    heightcm NUMERIC(5, 2), 
-    bmi NUMERIC(5, 2), 
-    age INT, 
-    gender TEXT,
-    race TEXT,
-    surgeon INT,
-    surgeont TEXT,
-    kfwt0 INT,
-    kfst0 INT,
-    kpaint0 INT,
-    okfwt0 INT,
-    okfst0 INT,
-    okpaint0 INT,
-    oks1t0 INT,
-    oks2t0 INT,
-    oks3t0 INT,
-    oks4t0 INT,
-    oks5t0 INT,
-    oks6t0 INT,
-    oks7t0 INT,
-    oks8t0 INT,
-    oks9t0 INT,
-    oks10t0 INT,
-    oks11t0 INT,
-    oks12t0 INT,
-    emot0 INT,
-    esct0 INT,
-    euat0 INT,
-    epdt0 INT,
-    eadt0 INT,
-    kfwt1 INT,
-    kfst1 INT,
-    kpaint1 INT,
-    okfwt1 INT,
-    okfst1 INT,
-    okpaint1 INT,
-    oks1t1 INT,
-    oks2t1 INT,
-    oks3t1 INT,
-    oks4t1 INT,
-    oks5t1 INT,
-    oks6t1 INT,
-    oks7t1 INT,
-    oks8t1 INT,
-    oks9t1 INT,
-    oks10t1 INT,
-    oks11t1 INT,
-    oks12t1 INT,
-    emot1 INT,
-    esct1 INT,
-    euat1 INT,
-    epdt1 INT,
-    eadt1 INT,
-    kfwt2 INT,
-    kfst2 INT,
-    kpaint2 INT,
-    okfwt2 INT,
-    okfst2 INT,
-    okpaint2 INT,
-    oks1t2 INT,
-    oks2t2 INT,
-    oks3t2 INT,
-    oks4t2 INT,
-    oks5t2 INT,
-    oks6t2 INT,
-    oks7t2 INT,
-    oks8t2 INT,
-    oks9t2 INT,
-    oks10t2 INT,
-    oks11t2 INT,
-    oks12t2 INT,
-    emot2 INT,
-    esct2 INT,
-    euat2 INT,
-    epdt2 INT,
-    eadt2 INT,
-    kfwt3 INT,
-    kfst3 INT,
-    kpaint3 INT,
-    okfwt3 INT,
-    okfst3 INT,
-    okpaint3 INT,
-    oks1t3 INT,
-    oks2t3 INT,
-    oks3t3 INT,
-    oks4t3 INT,
-    oks5t3 INT,
-    oks6t3 INT,
-    oks7t3 INT,
-    oks8t3 INT,
-    oks9t3 INT,
-    oks10t3 INT,
-    oks11t3 INT,
-    oks12t3 INT,
-    emot3 INT,
-    esct3 INT,
-    euat3 INT,
-    epdt3 INT,
-    eadt3 INT,
-    kfwt4 INT,
-    kfst4 INT,
-    kpaint4 INT,
-    okfwt4 INT,
-    okfst4 INT,
-    okpaint4 INT,
-    oks1t4 INT,
-    oks2t4 INT,
-    oks3t4 INT,
-    oks4t4 INT,
-    oks5t4 INT,
-    oks6t4 INT,
-    oks7t4 INT,
-    oks8t4 INT,
-    oks9t4 INT,
-    oks10t4 INT,
-    oks11t4 INT,
-    oks12t4 INT,
-    emot4 INT,
-    esct4 INT,
-    euat4 INT,
-    epdt4 INT,
-    eadt4 INT,
-    ooks1t0 INT,
-    ooks2t0 INT,
-    ooks3t0 INT,
-    ooks4t0 INT,
-    ooks5t0 INT,
-    ooks6t0 INT,
-    ooks7t0 INT,
-    ooks8t0 INT,
-    ooks9t0 INT,
-    ooks10t0 INT,
-    ooks11t0 INT,
-    ooks12t0 INT,
-    ooks1t1 INT,
-    ooks2t1 INT,
-    ooks3t1 INT,
-    ooks4t1 INT,
-    ooks5t1 INT,
-    ooks6t1 INT,
-    ooks7t1 INT,
-    ooks8t1 INT,
-    ooks9t1 INT,
-    ooks10t1 INT,
-    ooks11t1 INT,
-    ooks12t1 INT,
-    ooks1t2 INT,
-    ooks2t2 INT,
-    ooks3t2 INT,
-    ooks4t2 INT,
-    ooks5t2 INT,
-    ooks6t2 INT,
-    ooks7t2 INT,
-    ooks8t2 INT,
-    ooks9t2 INT,
-    ooks10t2 INT,
-    ooks11t2 INT,
-    ooks12t2 INT,
-    ooks1t3 INT,
-    ooks2t3 INT,
-    ooks3t3 INT,
-    ooks4t3 INT,
-    ooks5t3 INT,
-    ooks6t3 INT,
-    ooks7t3 INT,
-    ooks8t3 INT,
-    ooks9t3 INT,
-    ooks10t3 INT,
-    ooks11t3 INT,
-    ooks12t3 INT,
-    ooks1t4 INT,
-    ooks2t4 INT,
-    ooks3t4 INT,
-    ooks4t4 INT,
-    ooks5t4 INT,
-    ooks6t4 INT,
-    ooks7t4 INT,
-    ooks8t4 INT,
-    ooks9t4 INT,
-    ooks10t4 INT,
-    ooks11t4 INT,
-    ooks12t4 INT
+    participant_id TEXT,
+    "Age" INT,
+    "Gender" INT,
+
+    "(Post-BS)EQ Mobility" INT,
+    "(Post-BS)EQ Self-care" INT,
+    "(Post-BS)EQ Usual activities" INT,
+    "(Post-BS)EQ Pain/Discomfort" INT,
+    "(Post-BS)EQ Anxiety/Depression" INT,
+
+    "(Post-BS)BO Breathing" INT,
+    "(Post-BS)BO Sleep" INT,
+    "(Post-BS)BO Tiredness" INT,
+    "(Post-BS)BO Appearance" INT,
+    "(Post-BS)BO Romantic/Intimate" INT,
+    "(Post-BS)BO Discriminate/Humil" INT,
+    "(Post-BS)BO Social activities" INT,
+    "(Post-BS)BO Confidence" INT,
+    "(Post-BS)BO Burden to others" INT,
+    "(Post-BS)BO Diet control" INT,
+    "(Post-BS)BO Food enjoyment" INT,
+    "(Post-BS)BO GI problems" INT,
+
+    "ethnic3" INT,
+    "Pre-operative BMI(Clinical records)" NUMERIC(5, 2),
+    "BMI category(for PSM)" INT,
+    "Age group (21-50 or 51+)" INT,
+
+    "(Pre-BS)EQ Mobility" INT,
+    "(Pre-BS)EQ Self-care" INT,
+    "(Pre-BS)EQ Usual activities" INT,
+    "(Pre-BS)EQ Pain/Discomfort" INT,
+    "(Pre-BS)EQ Anxiety/Depression" INT,
+
+    "(Pre-BS)BO Breathing" INT,
+    "(Pre-BS)BO Sleep" INT,
+    "(Pre-BS)BO Tiredness" INT,
+    "(Pre-BS)BO Appearance" INT,
+    "(Pre-BS)BO Romantic/Intimate" INT,
+    "(Pre-BS)BO Discriminate/Humil" INT,
+    "(Pre-BS)BO Social activities" INT,
+    "(Pre-BS)BO Confidence" INT,
+    "(Pre-BS)BO Burden to others" INT,
+    "(Pre-BS)BO Diet control" INT,
+    "(Pre-BS)BO Food enjoyment" INT,
+    "(Pre-BS)BO GI problems" INT
 );
 
 DO $$ 
@@ -328,26 +179,24 @@ END $$;
 
 -- Seed Questions (without EQ5D as requested)
 INSERT INTO question (code, text) VALUES
-('KFS', 'How well can you use stairs?'),
-('KFW', 'How far can you walk?'),
-('KPAIN', 'How is your overall knee pain?'),
 ('EQ5D-MOB', 'Did you have problems in walking about today?'),
 ('EQ5D-SC', 'Did you have problems in washing or dressing yourself today?'),
 ('EQ5D-UA', 'Did you have problems in doing your usual activities today? (e.g. work, study, housework, family or leisure activities)'),
 ('EQ5D-PD', 'Did you have any pain/discomfort today?'),
 ('EQ5D-AD', 'Did you feel anxious/depressed today?'),
-('OKS1', 'How would you describe the pain you usually have from your knee?'),
-('OKS2', 'Have you had any trouble with washing and drying yourself (all over) because of your knee?'),
-('OKS3', 'Have you had any trouble getting in and out of a car or using public transport because of your knee? (whichever you tend to use)'),
-('OKS4', 'For how long have you been able to walk before pain from your knee becomes severe? (with or without a stick)'),
-('OKS5', 'After a meal (sat at a table), how painful has it been for you to stand up from a chair because of your knee?'),
-('OKS6', 'Have you been limping when walking, because of your knee?'),
-('OKS7', 'Could you kneel down and get up again afterwards?'),
-('OKS8', 'Have you been troubled by pain from your knee in bed at night?'),
-('OKS9', 'How much has pain from your knee interfered with your usual work (including housework)?'),
-('OKS10', 'Have you felt that your knee might suddenly "give way" or let you down?'),
-('OKS11', 'Could you do the household shopping on your own?'),
-('OKS12', 'Could you walk down one flight of stairs?');
+
+('BO-BREATHING', 'Did you have breathing problems today? (e.g. shortness of breath, wheezing, coughing, or phlegm)'),
+('BO-SLEEP', 'Did you have problems with sleep today?'),
+('BO-TIREDNESS', 'Did you feel tired today?'),
+('BO-APPEARANCE', 'Did you have problems accepting your appearance today? (e.g. overall appearance, body shape, skin, etc.)'),
+('BO-ROMANTIC-INTIMATE', 'Did you have problems starting or maintaining intimate relationships today? (including sexual relationships)'),
+('BO-DISCRIMINATE-HUMIL', 'Did you experience discrimination or humiliation today?'),
+('BO-SOCIAL-ACTIVITIES', 'Did you have problems participating in social activities today? (e.g. meeting others, eating together, or doing activities together)'),
+('BO-CONFIDENCE', 'Did you feel unconfident today?'),
+('BO-BURDEN-OTHERS', 'Did you feel like you were a burden to others today?'),
+('BO-DIET-CONTROL', 'Did you have problems controlling your diet today? (e.g. controlling food portions and food choices)'),
+('BO-FOOD-ENJOYMENT', 'Did you have problems enjoying food today?'),
+('BO-GI-PROBLEMS', 'Did you have gastrointestinal problems today? (e.g. nausea, vomiting, heartburn, bloating, diarrhoea, or constipation)');
 
 DO $$ 
 BEGIN
@@ -365,7 +214,7 @@ BEGIN
     TRUNCATE TABLE stagingraw;
     
     -- Load from CSV - use single quotes only and forward slashes
-    COPY stagingraw FROM 'C:/Program Files/PostgreSQL/17/data/CLEANED PROCEED App TKA 2024 KSS-3 OKS-12 EQ5D3L-5 (2).csv' DELIMITER ',' CSV HEADER;
+    COPY stagingraw FROM 'C:/Program Files/PostgreSQL/17/data/Simulated dataset for PtDA_simulated_2026-02-12 (NoLabel) (1).csv' DELIMITER ',' CSV HEADER;
     
     RAISE NOTICE 'Staging data loaded successfully';
     RAISE NOTICE 'Records in stagingraw: %', (SELECT COUNT(*) FROM stagingraw);
@@ -380,470 +229,181 @@ END $$;
 -- ==============================
 -- 5. POPULATE REFERENCE PATIENTS AND FORMS
 -- ==============================
+INSERT INTO referencepatient (
+    participantid,
+    sex,
+    ethnicity,
+    age,
+    bmicategory,
+    agegroup,
+    preoperativebmi
+)
+SELECT
+    sr."participant_id"::TEXT AS participantid,
+    sr."Gender" AS sex,
+    sr."ethnic3" AS ethnicity,
+    sr."Age" AS age,
 
-DO $$ 
-DECLARE
-    staged_count INT;
-    single_count INT;
-    form_count INT;
-    response_count INT;
-BEGIN
-    -- Insert staged bilateral patients
-    INSERT INTO referencepatient (
-        referencepatientid, surgeonid, surgeontitle, sex, ethnicity, age, height, weight, bmi,
-        operationdate, simbilateral, stagedbilateral, orderinstage, stageinterval, side
-    )
-    SELECT 
-        sr.pid AS referencepatientid,
-        sr.surgeon AS surgeonid,
-        sr.surgeont AS surgeontitle,
-        CASE 
-            WHEN sr.gender = 'Male' THEN 0
-            WHEN sr.gender = 'Female' THEN 1
-            ELSE 0
-        END AS gendercode,
-        CASE 
-            WHEN sr.race = 'Chinese' THEN 0
-            WHEN sr.race = 'Malay' THEN 1
-            WHEN sr.race = 'Indian' THEN 2
-            WHEN sr.race = 'Caucasian' THEN 3
-            WHEN sr.race = 'Others' THEN 4
-            ELSE -1
-        END AS ethnicitycode,
-        sr.age,
-        sr.heightcm,
-        sr.weightkg,
-        sr.bmi,
-        sr.opdate,
-        FALSE,
-        TRUE,
-        sr.ordersid,
-        sr.stabk_int,
-        CASE 
-            WHEN sr.side = 'L' THEN 0
-            WHEN sr.side = 'R' THEN 1
-            WHEN sr.side = 'Lt' THEN 0
-            WHEN sr.side = 'Rt' THEN 1
-            WHEN sr.side = 'Left' THEN 0
-            WHEN sr.side = 'Right' THEN 1
-            ELSE -1
-        END AS side
-    FROM stagingraw sr
-    WHERE sr.simbk = 0
-    AND sr.stabk = 1
-    AND sr.ordersid = 1
-    AND sr.stabk_int > 6;
+    sr."BMI category(for PSM)" AS bmicategory,
+    sr."Age group (21-50 or 51+)" AS agegroup,
+    sr."Pre-operative BMI(Clinical records)"::NUMERIC(5,2) AS preoperativebmi
+
+FROM stagingraw sr
+ON CONFLICT (participantid) DO UPDATE
+SET
+    sex = EXCLUDED.sex,
+    ethnicity = EXCLUDED.ethnicity,
+    age = EXCLUDED.age,
+    bmicategory = EXCLUDED.bmicategory,
+    agegroup = EXCLUDED.agegroup,
+    preoperativebmi = EXCLUDED.preoperativebmi;
     
-    GET DIAGNOSTICS staged_count = ROW_COUNT;
-    
-    -- Insert single surgery patients
-    INSERT INTO referencepatient (
-        referencepatientid, surgeonid, surgeontitle, sex, ethnicity, age, height, weight, bmi,
-        operationdate, simbilateral, stagedbilateral, orderinstage, stageinterval, side
-    )
-    SELECT 
-        sr.pid AS referencepatientid,
-        sr.surgeon AS surgeonid,
-        sr.surgeont AS surgeontitle,
-        CASE 
-            WHEN sr.gender = 'Male' THEN 0
-            WHEN sr.gender = 'Female' THEN 1
-            ELSE 0
-        END AS gendercode,
-        CASE 
-            WHEN sr.race = 'Chinese' THEN 0
-            WHEN sr.race = 'Malay' THEN 1
-            WHEN sr.race = 'Indian' THEN 2
-            WHEN sr.race = 'Caucasian' THEN 3
-            WHEN sr.race = 'Others' THEN 4
-            ELSE -1
-        END AS ethnicitycode,
-        sr.age,
-        sr.heightcm,
-        sr.weightkg,
-        sr.bmi,
-        sr.opdate,
-        FALSE AS simbilateral,
-        FALSE AS stagedbilateral,
-        0 AS orderinstage,
-        0 AS stageinterval,
-        CASE 
-            WHEN sr.side = 'L' THEN 0
-            WHEN sr.side = 'R' THEN 1
-            WHEN sr.side = 'Lt' THEN 0
-            WHEN sr.side = 'Rt' THEN 1
-            WHEN sr.side = 'Left' THEN 0
-            WHEN sr.side = 'Right' THEN 1
-            ELSE -1
-        END AS side
-    FROM stagingraw sr
-    WHERE sr.simbk = 0
-      AND sr.stabk = 0
-      AND sr.age IS NOT NULL;
-    
-    GET DIAGNOSTICS single_count = ROW_COUNT;
-    
-    RAISE NOTICE 'Reference patients inserted - Staged: %, Single: %', staged_count, single_count;
     
 -- Insert into form and formresponse from stagingraw
 -- This involves unpivoting the wide format of responses into a long format
 -- Step 1: Flatten all patient responses across timepoints
+DO $$
+DECLARE
+    form_count INT;
+    response_count INT;
+BEGIN
+
     WITH flattened AS (
-    -- T0
-    SELECT rp.referencepatientid, 0 AS term, 'KFW' AS code, sr.kfwt0 AS answervalue
-    FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'KFS', sr.kfst0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'KPAIN', sr.kpaint0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'OKS1', sr.oks1t0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'OKS2', sr.oks2t0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'OKS3', sr.oks3t0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'OKS4', sr.oks4t0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'OKS5', sr.oks5t0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'OKS6', sr.oks6t0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'OKS7', sr.oks7t0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'OKS8', sr.oks8t0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'OKS9', sr.oks9t0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'OKS10', sr.oks10t0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'OKS11', sr.oks11t0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
-    UNION ALL
-    SELECT rp.referencepatientid, 0, 'OKS12', sr.oks12t0 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6)) 
+        SELECT
+            rp.referencepatientid,
+            v.term,
+            v.code,
+            CASE
+                WHEN v.raw_answervalue IS NULL THEN NULL
+                ELSE v.raw_answervalue - 1
+            END AS answervalue
+        FROM stagingraw sr
+        JOIN referencepatient rp
+            ON rp.participantid = sr."participant_id"::TEXT
 
-    -- T1
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'KFW', sr.kfwt1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'KFS', sr.kfst1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'KPAIN', sr.kpaint1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'OKS1', sr.oks1t1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'OKS2', sr.oks2t1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'OKS3', sr.oks3t1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'OKS4', sr.oks4t1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'OKS5', sr.oks5t1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'OKS6', sr.oks6t1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'OKS7', sr.oks7t1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'OKS8', sr.oks8t1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'OKS9', sr.oks9t1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'OKS10', sr.oks10t1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'OKS11', sr.oks11t1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 1, 'OKS12', sr.oks12t1 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
+        CROSS JOIN LATERAL (
+            VALUES
+                -- ======================
+                -- PRE-BS ANSWERS
+                -- term = 0
+                -- ======================
+                (0, 'EQ5D-MOB',                sr."(Pre-BS)EQ Mobility"),
+                (0, 'EQ5D-SC',                 sr."(Pre-BS)EQ Self-care"),
+                (0, 'EQ5D-UA',                 sr."(Pre-BS)EQ Usual activities"),
+                (0, 'EQ5D-PD',                 sr."(Pre-BS)EQ Pain/Discomfort"),
+                (0, 'EQ5D-AD',                 sr."(Pre-BS)EQ Anxiety/Depression"),
 
-    -- T2
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'KFW', sr.kfwt2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'KFS', sr.kfst2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'KPAIN', sr.kpaint2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'OKS1', sr.oks1t2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'OKS2', sr.oks2t2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'OKS3', sr.oks3t2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'OKS4', sr.oks4t2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'OKS5', sr.oks5t2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'OKS6', sr.oks6t2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'OKS7', sr.oks7t2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'OKS8', sr.oks8t2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'OKS9', sr.oks9t2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'OKS10', sr.oks10t2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'OKS11', sr.oks11t2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 2, 'OKS12', sr.oks12t2 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
+                (0, 'BO-BREATHING',            sr."(Pre-BS)BO Breathing"),
+                (0, 'BO-SLEEP',                sr."(Pre-BS)BO Sleep"),
+                (0, 'BO-TIREDNESS',            sr."(Pre-BS)BO Tiredness"),
+                (0, 'BO-APPEARANCE',           sr."(Pre-BS)BO Appearance"),
+                (0, 'BO-ROMANTIC-INTIMATE',    sr."(Pre-BS)BO Romantic/Intimate"),
+                (0, 'BO-DISCRIMINATE-HUMIL',   sr."(Pre-BS)BO Discriminate/Humil"),
+                (0, 'BO-SOCIAL-ACTIVITIES',    sr."(Pre-BS)BO Social activities"),
+                (0, 'BO-CONFIDENCE',           sr."(Pre-BS)BO Confidence"),
+                (0, 'BO-BURDEN-OTHERS',        sr."(Pre-BS)BO Burden to others"),
+                (0, 'BO-DIET-CONTROL',         sr."(Pre-BS)BO Diet control"),
+                (0, 'BO-FOOD-ENJOYMENT',       sr."(Pre-BS)BO Food enjoyment"),
+                (0, 'BO-GI-PROBLEMS',          sr."(Pre-BS)BO GI problems"),
 
-    -- T3
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'KFW', sr.kfwt3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'KFS', sr.kfst3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'KPAIN', sr.kpaint3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'OKS1', sr.oks1t3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'OKS2', sr.oks2t3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'OKS3', sr.oks3t3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'OKS4', sr.oks4t3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'OKS5', sr.oks5t3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))   
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'OKS6', sr.oks6t3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'OKS7', sr.oks7t3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'OKS8', sr.oks8t3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'OKS9', sr.oks9t3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'OKS10', sr.oks10t3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'OKS11', sr.oks11t3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 3, 'OKS12', sr.oks12t3 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
+                -- ======================
+                -- POST-BS ANSWERS
+                -- term = 1
+                -- ======================
+                (1, 'EQ5D-MOB',                sr."(Post-BS)EQ Mobility"),
+                (1, 'EQ5D-SC',                 sr."(Post-BS)EQ Self-care"),
+                (1, 'EQ5D-UA',                 sr."(Post-BS)EQ Usual activities"),
+                (1, 'EQ5D-PD',                 sr."(Post-BS)EQ Pain/Discomfort"),
+                (1, 'EQ5D-AD',                 sr."(Post-BS)EQ Anxiety/Depression"),
 
-    -- T4
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'KFW', sr.kfwt4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'KFS', sr.kfst4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'KPAIN', sr.kpaint4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'OKS1', sr.oks1t4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'OKS2', sr.oks2t4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'OKS3', sr.oks3t4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'OKS4', sr.oks4t4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'OKS5', sr.oks5t4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'OKS6', sr.oks6t4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'OKS7', sr.oks7t4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'OKS8', sr.oks8t4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'OKS9', sr.oks9t4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'OKS10', sr.oks10t4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'OKS11', sr.oks11t4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-    UNION ALL
-    SELECT rp.referencepatientid, 4, 'OKS12', sr.oks12t4 FROM stagingraw sr
-    JOIN referencepatient rp ON rp.referencepatientid = sr.pid
-    WHERE ((sr.stabk = 0 AND sr.simbk = 0) OR (sr.stabk = 1 AND sr.ordersid = 1 AND sr.stabk_int > 6))
-),
+                (1, 'BO-BREATHING',            sr."(Post-BS)BO Breathing"),
+                (1, 'BO-SLEEP',                sr."(Post-BS)BO Sleep"),
+                (1, 'BO-TIREDNESS',            sr."(Post-BS)BO Tiredness"),
+                (1, 'BO-APPEARANCE',           sr."(Post-BS)BO Appearance"),
+                (1, 'BO-ROMANTIC-INTIMATE',    sr."(Post-BS)BO Romantic/Intimate"),
+                (1, 'BO-DISCRIMINATE-HUMIL',   sr."(Post-BS)BO Discriminate/Humil"),
+                (1, 'BO-SOCIAL-ACTIVITIES',    sr."(Post-BS)BO Social activities"),
+                (1, 'BO-CONFIDENCE',           sr."(Post-BS)BO Confidence"),
+                (1, 'BO-BURDEN-OTHERS',        sr."(Post-BS)BO Burden to others"),
+                (1, 'BO-DIET-CONTROL',         sr."(Post-BS)BO Diet control"),
+                (1, 'BO-FOOD-ENJOYMENT',       sr."(Post-BS)BO Food enjoyment"),
+                (1, 'BO-GI-PROBLEMS',          sr."(Post-BS)BO GI problems")
+        ) AS v(term, code, raw_answervalue)
+    ),
+
     insertedforms AS (
-        INSERT INTO refform (referencepatientid, term)
-        SELECT DISTINCT referencepatientid, term
-        FROM flattened
+        INSERT INTO refform (
+            referencepatientid,
+            term
+        )
+        SELECT DISTINCT
+            fl.referencepatientid,
+            fl.term
+        FROM flattened fl
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM refform rf
+            WHERE rf.referencepatientid = fl.referencepatientid
+              AND rf.term = fl.term
+        )
         RETURNING formid, referencepatientid, term
+    ),
+
+    allforms AS (
+        SELECT formid, referencepatientid, term
+        FROM insertedforms
+
+        UNION
+
+        SELECT rf.formid, rf.referencepatientid, rf.term
+        FROM refform rf
+        JOIN (
+            SELECT DISTINCT referencepatientid, term
+            FROM flattened
+        ) fl
+            ON fl.referencepatientid = rf.referencepatientid
+           AND fl.term = rf.term
     )
-    INSERT INTO refformresponse (formid, questionid, answervalue)
+
+    INSERT INTO refformresponse (
+        formid,
+        questionid,
+        answervalue
+    )
     SELECT
-        f.formid,
+        af.formid,
         q.questionid,
         fl.answervalue
-    FROM insertedforms f
-    JOIN flattened fl ON f.referencepatientid = fl.referencepatientid AND f.term = fl.term
-    JOIN question q ON q.code = fl.code
-    WHERE fl.answervalue IS NOT NULL;
-    
-    GET DIAGNOSTICS form_count = ROW_COUNT;
-    
-    SELECT COUNT(*) INTO response_count FROM refformresponse;
-    
-    RAISE NOTICE 'Forms and responses populated - Forms: %, Responses: %', form_count, response_count;
-    
+    FROM flattened fl
+    JOIN allforms af
+        ON af.referencepatientid = fl.referencepatientid
+       AND af.term = fl.term
+    JOIN question q
+        ON q.code = fl.code
+    WHERE fl.answervalue IS NOT NULL
+      AND NOT EXISTS (
+          SELECT 1
+          FROM refformresponse rfr
+          WHERE rfr.formid = af.formid
+            AND rfr.questionid = q.questionid
+      );
+
+    GET DIAGNOSTICS response_count = ROW_COUNT;
+
+    SELECT COUNT(*) INTO form_count
+    FROM refform;
+
+    RAISE NOTICE 'Forms and responses populated.';
+    RAISE NOTICE 'Total forms: %', form_count;
+    RAISE NOTICE 'New responses inserted: %', response_count;
+
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE NOTICE 'Error during data population: %', SQLERRM;
+        RAISE NOTICE 'Error during form/response population: %', SQLERRM;
         RAISE;
 END $$;
 
--- ==============================
--- 6. FINAL VERIFICATION
--- ==============================
-
-DO $$ 
-DECLARE
-    total_patients INT;
-    total_forms INT;
-    total_responses INT;
-BEGIN
-    SELECT COUNT(*) INTO total_patients FROM referencepatient;
-    SELECT COUNT(*) INTO total_forms FROM refform;
-    SELECT COUNT(*) INTO total_responses FROM refformresponse;
-    
-    RAISE NOTICE '=== DATABASE RESET COMPLETE ===';
-    RAISE NOTICE 'Total reference patients: %', total_patients;
-    RAISE NOTICE 'Total forms: %', total_forms;
-    RAISE NOTICE 'Total form responses: %', total_responses;
-    RAISE NOTICE '=== Ready for testing ===';
-END $$;
+SELECT COUNT(*) FROM stagingraw;
+SELECT COUNT(*) FROM referencepatient;
+SELECT COUNT(*) FROM refform;
+SELECT COUNT(*) FROM refformresponse;
