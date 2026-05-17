@@ -297,11 +297,11 @@ const renderHumanIcons = () => {
                 <p>
                   {currentLang === "en" && (
                     <>Below are responses of {beforeData?.totalRows} patients similar to {getName(currentLang)}.{" "}
-                    Those patients are similar to {getName(currentLang)} in {getFilterDescription(filters, patient, currentLang)}.</>
+                    Those patients are similar to {getName(currentLang)} in {getFilterDescription(filters, currentLang)}.</>
                   )}
                   {currentLang === "zh" && (
                     <>以下是{beforeData?.totalRows}名与{getName(currentLang)}相似的患者在手术前的回答。
-                    这些患者与{getName(currentLang)}在{getFilterDescription(filters, patient, currentLang)}方面相似。
+                    这些患者与{getName(currentLang)}在{getFilterDescription(filters, currentLang)}方面相似。
                     </>
                   )}
                 </p>

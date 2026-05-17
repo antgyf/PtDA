@@ -4,6 +4,7 @@ import {
   FilterType,
   Questions,
 } from "../models/patient/patientDetails";
+import { Patient } from "../models/patient/patientReport";
 
 export const getRankDescription = (lan: string) => {
   const { form } = useForm();
@@ -65,7 +66,6 @@ export const getName = (language: string) => {
 
 export const getFilterDescription = (
   filters: FilterType,
-  patient: Patient,
   lan: string
 ) => {
   const parts: React.ReactNode[] = [];

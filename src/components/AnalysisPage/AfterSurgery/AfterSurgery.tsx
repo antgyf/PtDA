@@ -311,12 +311,12 @@ const AfterSurgery: React.FC<AfterSurgeryProps> = ({ activeTab, currentLang }) =
                   <p>
                     {currentLang === "en" && (
                       <>Below are responses of {afterData?.totalRows} patients at {termToMonths(selectedTerm)} months after surgery.{" "}
-                      Those patients are similar to {getName(currentLang)} in {getFilterDescription(filters, patient, currentLang)} before surgery,{" "}
+                      Those patients are similar to {getName(currentLang)} in {getFilterDescription(filters, currentLang)} before surgery,{" "}
                       and they experienced the same level of problems as {getName(currentLang)} in this function before surgery.</>
                     )}
                     {currentLang === "zh" && (
                       <>下面是{afterData?.totalRows}名与{getName(currentLang)}相似的患者在手术后{termToMonths(selectedTerm)}个月的回答。
-                      这些患者手术前与{getName(currentLang)}在{getFilterDescription(filters, patient, currentLang)}方面相似， 并且他们手术前在这项功能方面经历了与 {getName(currentLang)} 相同程度的问题。
+                      这些患者手术前与{getName(currentLang)}在{getFilterDescription(filters, currentLang)}方面相似， 并且他们手术前在这项功能方面经历了与 {getName(currentLang)} 相同程度的问题。
                       </>
                     )}
                   </p>
