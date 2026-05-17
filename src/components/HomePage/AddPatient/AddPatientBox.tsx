@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   AddPatientForm,
+  BMICategory,
   Ethnicity,
   Sex,
 } from "../../../models/patient/patientDetails";
@@ -46,6 +47,41 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
       setForm((prev) => ({ ...prev, bmi: "" }));
     }
   }, [form.height, form.weight]);
+
+  // Automatically determine BMI category whenever BMI changes
+  useEffect(() => {
+    const bmi = parseFloat(form.bmi || "0");
+    let bmicategory = "";
+
+    if (bmi > 0 && bmi < 23.0) {
+      bmicategory = "0";
+    } else if (bmi >= 23.0 && bmi < 27.5) {
+      bmicategory = "1";
+    } else if (bmi >= 27.5 && bmi < 32.5) {
+      bmicategory = "2";
+    } else if (bmi >= 32.5 && bmi < 37.5) {
+      bmicategory = "3";
+    } else if (bmi >= 37.5) {
+      bmicategory = "4";
+    }
+
+    setForm((prev) => ({ ...prev, bmicategory }));
+  }, [form.bmi]);
+
+  // Automatically determine age group whenever age changes
+  useEffect(() => {
+    const age = parseInt(form.age || "", 10);
+    let agegroup = "";
+
+    if (!Number.isNaN(age)) {
+      agegroup = age < 50 ? "0" : "1";
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      agegroup,
+    }));
+  }, [form.age]);
 
   const handleSubmitEvent = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -210,12 +246,6 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
               value={form.age}
               placeholder="0 - 120"
             />
-            <TextInput
-              name="agegroup"
-              label="Age Group"
-              value={form.agegroup}
-              disabled
-            />
             <SelectInput
               name="ethnicity"
               label="Ethnicity"
@@ -250,7 +280,7 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
             <TextInput
               name="bmicategory"
               label="BMI Category"
-              value={form.bmicategory}
+              value={form.bmicategory ? BMICategory[form.bmicategory] : ""}
               disabled
             />
           </div>

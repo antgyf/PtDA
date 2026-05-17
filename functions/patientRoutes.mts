@@ -209,7 +209,9 @@ router.get("/searchByName", async (req: Request, res: Response) => {
   }
 
   try {
-    const offset = (Number(page) - 1) * Number(limit);
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const offset = (pageNumber - 1) * limitNumber;
 
     const result = await pool.query(
       `SELECT * 
@@ -217,17 +219,9 @@ router.get("/searchByName", async (req: Request, res: Response) => {
        WHERE fullname ILIKE $1
        ORDER BY patientid DESC
        LIMIT $2 OFFSET $3`,
-      [`%${name}%`, Number(limit), offset]
+      [`%${name}%`, limitNumber, offset]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        message: "No patients found with the given name",
-        totalPatients: 0,
-      });
-    }
-
-    // Count total for pagination
     const countResult = await pool.query(
       `SELECT COUNT(*) 
        FROM patient 
@@ -236,12 +230,17 @@ router.get("/searchByName", async (req: Request, res: Response) => {
     );
 
     const totalPatients = Number(countResult.rows[0].count);
+    const totalPages = Math.ceil(totalPatients / limitNumber);
 
     res.status(200).json({
       patients: result.rows,
       totalPatients,
-      totalPages: Math.ceil(totalPatients / Number(limit)),
-      currentPage: Number(page),
+      totalPages,
+      currentPage: pageNumber,
+      message:
+        result.rows.length === 0
+          ? "No patients found with the given name"
+          : "Patients found",
     });
   } catch (error) {
     console.error("Error searching patients by name:", error);
@@ -257,7 +256,7 @@ router.get("/filter", async (req: Request, res: Response) => {
     sex,
     ethnicity,
     age,
-    bmi
+    bmicategory,
   } = req.query;
 
   try {
@@ -268,63 +267,56 @@ router.get("/filter", async (req: Request, res: Response) => {
     const values: (string | number)[] = [];
     let conditionIndex = 1;
 
-    // Base queries
-    let query = `SELECT p.* FROM patient p`;
-    let countQuery = `SELECT COUNT(*) FROM patient p`;
+    let query = `SELECT p.* FROM patient p WHERE 1=1`;
+    let countQuery = `SELECT COUNT(*) FROM patient p WHERE 1=1`;
 
-    query += ` WHERE 1=1`;
-    countQuery += ` WHERE 1=1`;
-
-    // sex filter
-    if (sex) {
+    // Sex filter
+    if (sex !== undefined && sex !== "") {
       query += ` AND p.sex = $${conditionIndex}`;
       countQuery += ` AND p.sex = $${conditionIndex}`;
       values.push(Number(sex));
       conditionIndex++;
     }
 
-    // ethnicity filter
-    if (ethnicity) {
+    // Ethnicity filter
+    if (ethnicity !== undefined && ethnicity !== "") {
       query += ` AND p.ethnicity = $${conditionIndex}`;
       countQuery += ` AND p.ethnicity = $${conditionIndex}`;
       values.push(Number(ethnicity));
       conditionIndex++;
     }
 
-    // age filter
-    if (age) {
-      query += ` AND p.age = $${conditionIndex}`;
-      countQuery += ` AND p.age = $${conditionIndex}`;
+    // Age group filter
+    // 0 = Below 50 years
+    // 1 = 50 years and above
+    if (age !== undefined && age !== "") {
+      query += ` AND p.agegroup = $${conditionIndex}`;
+      countQuery += ` AND p.agegroup = $${conditionIndex}`;
       values.push(Number(age));
       conditionIndex++;
     }
 
-    // bmi filter
-    if (bmi) {
-      if (bmi === "0") {
-        query += ` AND p.bmi < $${conditionIndex}`;
-        countQuery += ` AND p.bmi < $${conditionIndex}`;
-        values.push(25);
-      } else if (bmi === "1") {
-        query += ` AND p.bmi >= $${conditionIndex}`;
-        countQuery += ` AND p.bmi >= $${conditionIndex}`;
-        values.push(25);
-      }
+    // Full BMI category filter
+    // 0 = Low CVD Risk (<23.0)
+    // 1 = Moderate CVD Risk (23.0 - 27.4)
+    // 2 = High CVD Risk (27.5 - 32.4)
+    // 3 = Very high CVD Risk (32.5 - 37.4)
+    // 4 = Very very high CVD Risk (37.5+)
+    if (bmicategory !== undefined && bmicategory !== "") {
+      query += ` AND p.bmicategory = $${conditionIndex}`;
+      countQuery += ` AND p.bmicategory = $${conditionIndex}`;
+      values.push(Number(bmicategory));
       conditionIndex++;
     }
 
-    // Add pagination
+    const filterValues = [...values];
+
     query += ` ORDER BY p.patientid DESC LIMIT $${conditionIndex} OFFSET $${conditionIndex + 1}`;
     values.push(limitNumber, offset);
 
-    // Run main query
     const result = await pool.query(query, values);
+    const countResult = await pool.query(countQuery, filterValues);
 
-    // Run count query (exclude LIMIT/OFFSET values)
-    const countResult = await pool.query(
-      countQuery,
-      values.slice(0, conditionIndex - 1)
-    );
     const totalPatients = Number(countResult.rows[0].count);
     const totalPages = Math.ceil(totalPatients / limitNumber);
 
@@ -642,121 +634,116 @@ router.put("/priorities", async (req: Request, res: Response) => {
   }
 });
 
+
 interface Patient {
   referencepatientid: number;
-  surgeonid: number;
-  surgeontitle: string;
   age: number;
   sex: number;
   ethnicity: number;
   height: number;
   weight: number;
   bmi: number;
+  bmicategory: number;
 }
 
+interface FilterType {
+  age?: 0 | 1;
+  sex?: 0 | 1;
+  ethnicity?: 0 | 1;
+  bmi?: 0 | 1;
+}
+
+// Change this if Chinese is not stored as 0 in your DB
+const CHINESE_ETHNICITY_CODE = 0;
+
 const formatConditions = (
-  filters: {
-    categories: string[];
-    age?: { range: number };
-    bmi?: { range: number };
-    surgeonid?: string;
-    surgeontitle?: string;
-  },
-  patient: Patient,
-  questionid: number = 0,
-  number = 0
+  filters: FilterType = {},
+  startParamIndex: number
 ) => {
   const conditions: string[] = [];
-  const params: (string | number)[] = [questionid];
-  let surgeont = "";
+  const params: (string | number)[] = [];
 
+  let paramIndex = startParamIndex;
 
-  // Handle categorical filters (Ethnicity, Gender)
-  if (filters.categories.includes("Ethnicity")) {
-    conditions.push(`p.ethnicity = $${params.length + number + 1}`);
-    params.push(patient.ethnicity);
-  }
-  if (filters.categories.includes("Gender")) {
-    conditions.push(`p.sex = $${params.length + number + 1}`);
-    params.push(patient.sex);
-  }
+  const addParam = (value: string | number) => {
+    params.push(value);
+    return `$${paramIndex++}`;
+  };
 
-  if (filters.categories.includes("Surgeon ID") && filters.surgeonid) {
-    conditions.push(`p.surgeonid = $${params.length + number + 1}`);
-    params.push(Number(filters.surgeonid));
-  }
+  // Age: 0 = <50, 1 = 50+
+  if (filters.age !== undefined) {
+    const ageParam = addParam(50);
 
-  // Handle Age Range Filter
-  // Age filter
-  if (filters.categories.includes("Age Range") && filters.age?.range !== undefined && patient.age) {
-    conditions.push(`p.age BETWEEN $${params.length + number + 1} AND $${params.length + number + 2}`);
-    params.push(Number(patient.age) - Number(filters.age.range));
-    params.push(Number(patient.age) + Number(filters.age.range));
-  }
-
-  // BMI filter
-  if (filters.categories.includes("BMI Range") && filters.bmi?.range !== undefined && patient.bmi) {
-    conditions.push(`p.bmi BETWEEN $${params.length + number + 1} AND $${params.length + number + 2}`);
-    params.push(Math.floor(Number(patient.bmi) - Number(filters.bmi.range)));
-    params.push(Math.ceil(Number(patient.bmi) + Number(filters.bmi.range)));
-  }
-
-  if (filters.categories.includes("Surgeon Title") && filters.surgeontitle) {
-    // Map display title to one or more possible DB values
-    const surgeonTitleMap: Record<string, string[]> = {
-      "Associate Consultant": ["AC"],
-      "Consultant": ["C"],
-      "Senior Consultant": ["AP", "P"] // 2 possible values
-    };
-
-    const mappedTitles = surgeonTitleMap[filters.surgeontitle] || [];
-
-    if (mappedTitles.length === 1) {
-      // Single title → use "="
-      conditions.push(`p.surgeontitle = $${params.length + number + 1}`);
-      params.push(mappedTitles[0]);
-    } else if (mappedTitles.length > 1) {
-      // Multiple titles → use "IN"
-      const placeholders = mappedTitles
-        .map((_, idx) => `$${params.length + number + idx + 1}`)
-        .join(", ");
-      conditions.push(`p.surgeontitle IN (${placeholders})`);
-      params.push(...mappedTitles);
+    if (Number(filters.age) === 0) {
+      conditions.push(`p.age < ${ageParam}`);
+    } else {
+      conditions.push(`p.age >= ${ageParam}`);
     }
-
-    //console.log("Surgeon Title filter applied with values:", mappedTitles);
   }
 
-  // Return formatted conditions and parameters
+  // Gender: 0 = Male, 1 = Female
+  if (filters.sex !== undefined) {
+    const sexParam = addParam(Number(filters.sex));
+    conditions.push(`p.sex = ${sexParam}`);
+  }
+
+  // Ethnicity: 0 = Chinese, 1 = Non-Chinese
+  if (filters.ethnicity !== undefined) {
+    const chineseParam = addParam(CHINESE_ETHNICITY_CODE);
+
+    if (Number(filters.ethnicity) === 0) {
+      conditions.push(`p.ethnicity = ${chineseParam}`);
+    } else {
+      conditions.push(`p.ethnicity <> ${chineseParam}`);
+    }
+  }
+
+  // BMI: 0 = 32.5–37.4, 1 = 37.5+
+  if (filters.bmi !== undefined) {
+    if (Number(filters.bmi) === 0) {
+      const lowerBmi = addParam(32.5);
+      const upperBmi = addParam(37.5);
+
+      conditions.push(`(p.bmi >= ${lowerBmi} AND p.bmi < ${upperBmi})`);
+    } else {
+      const lowerBmi = addParam(37.5);
+
+      conditions.push(`p.bmi >= ${lowerBmi}`);
+    }
+  }
+
   return {
     conditionString: conditions.length > 0 ? conditions.join(" AND ") : "1=1",
     params,
   };
 };
 
-
 router.post("/before", async (req: Request, res: Response) => {
-  const { questionid, options, patient, filters } = req.body;
+  const { questionid, options, filters } = req.body;
 
-  //console.log ("Received /before request with:", { questionid, options, patient, filters });
-  
   try {
     const results: { option: string; count: number; percentage: number }[] = [];
 
-    let conditions = "1=1"; // Default condition to prevent WHERE clause issues
-    const queryParams: (string | number)[] = [];
-
-    if (filters && Object.keys(filters).length > 0) {
-      const filterConditions = formatConditions(filters, patient, questionid);
-      conditions += ` AND ${filterConditions.conditionString}`;
-      queryParams.push(...filterConditions.params);
+    if (
+      questionid === undefined ||
+      questionid === null ||
+      !Array.isArray(options)
+    ) {
+      res.status(400).json({ message: "Missing required parameters." });
+      return;
     }
 
-    //console.log("Conditions:", conditions);
-    //console.log("Params:", queryParams);
+    // $1 = questionid
+    // filter params start from $2
+    const filterConditions = formatConditions(filters || {}, 2);
 
-    // Query to get the total number of rows with filters
-    // only count from forms submitted 6 months after surgery
+    const conditions = filterConditions.conditionString;
+
+    const queryParams: (string | number)[] = [
+      questionid,
+      ...filterConditions.params,
+    ];
+
     const totalQuery = `
       SELECT COUNT(rfr.answervalue) AS total
       FROM refformresponse rfr
@@ -767,15 +754,14 @@ router.post("/before", async (req: Request, res: Response) => {
         AND ${conditions}
     `;
 
-    const { rows: totalResult } = await pool.query<{ total: number }>(
+    const { rows: totalResult } = await pool.query<{ total: string | number }>(
       totalQuery,
       queryParams
     );
 
-    const totalRows = totalResult[0]?.total || 0;
+    const totalRows = Number(totalResult[0]?.total ?? 0);
 
     if (totalRows === 0) {
-      console.log("No data found for the given filters.");
       res.status(200).json({
         message: "No data found for the given filters.",
         totalRows,
@@ -784,8 +770,11 @@ router.post("/before", async (req: Request, res: Response) => {
       return;
     }
 
-    // for now, ensure term = 1 (6 months after surgery)
     for (const option of options) {
+      if (option === undefined || option === null) continue;
+
+      const optionParamIndex = queryParams.length + 1;
+
       const query = `
         SELECT COUNT(rfr.answervalue) AS count
         FROM refformresponse rfr
@@ -793,51 +782,60 @@ router.post("/before", async (req: Request, res: Response) => {
         JOIN referencepatient p ON f.referencepatientid = p.referencepatientid
         WHERE rfr.questionid = $1
           AND f.term = 0
-          AND rfr.answervalue = $${queryParams.length + 1}
+          AND rfr.answervalue = $${optionParamIndex}
           AND ${conditions}
       `;
 
-      const { rows: optionRows } = await pool.query<{ count: number }>(query, [
-        ...queryParams,
-        option,
-      ]);
+      const { rows: optionRows } = await pool.query<{ count: string | number }>(
+        query,
+        [...queryParams, option]
+      );
 
       const count = Number(optionRows[0]?.count ?? 0);
-      const percentage = Math.round((count / totalRows) * 100);
+      const percentage =
+        totalRows > 0 ? Math.round((count / totalRows) * 100) : 0;
 
-      results.push({ option, count, percentage });
+      results.push({
+        option: option.toString(),
+        count,
+        percentage,
+      });
     }
-
-    //console.log("Results:", results);
 
     res.status(200).json({
       message: "Data fetched successfully",
       totalRows,
       data: results,
+      questionid,
     });
   } catch (error) {
     console.error("Error fetching data from registry:", error);
     res.status(500).json({
       message: "Error fetching data from registry",
-      error: error,
+      error,
     });
   }
 });
 
+
 router.post("/after", async (req: Request, res: Response) => {
   const {
-    questionid,   // this maps to question.code
-    options,        // possible answer values
-    filters,        // filtering params
-    patient,
-    initial,        // initial answer value
-    term = 1,       // follow-up term (1, 2, 3...)
+    questionid,
+    options,
+    filters,
+    initial,
+    term = 1,
     median = false,
   } = req.body;
 
-  //console.log("Received /after request with:", questionid);
   try {
-    if (!questionid || !options) {
+    if (
+      questionid === undefined ||
+      questionid === null ||
+      initial === undefined ||
+      initial === null ||
+      !Array.isArray(options)
+    ) {
       res.status(400).json({ message: "Missing required parameters." });
       return;
     }
@@ -848,17 +846,19 @@ router.post("/after", async (req: Request, res: Response) => {
       percentage: number;
     }[] = [];
 
-    // Step 1: Build conditions string + params
-    let conditions = `1=1`;
-    const queryParams: (string | number)[] = [];
+    // $1 = initial
+    // $2 = questionid
+    // filters start from $3
+    const filterConditions = formatConditions(filters || {}, 3);
 
-    if (filters && Object.keys(filters).length > 0) {
-      const filterConditions = formatConditions(filters, patient, questionid, 1);
-      conditions += ` AND ${filterConditions.conditionString}`;
-      queryParams.push(...filterConditions.params);
-    }
+    const conditions = filterConditions.conditionString;
 
-    // Step 2: Find all patients who had the initial value at baseline (term=0)
+    const baselineParams: (string | number)[] = [
+      initial,
+      questionid,
+      ...filterConditions.params,
+    ];
+
     const baselineQuery = `
       SELECT f.referencepatientid
       FROM refformresponse rfr
@@ -870,28 +870,23 @@ router.post("/after", async (req: Request, res: Response) => {
         AND ${conditions}
     `;
 
-    const { rows: baselineRows } = await pool.query<{ referencepatientid: number }>(
-      baselineQuery,
-      [initial, ...queryParams]
-    );
+    const { rows: baselineRows } = await pool.query<{
+      referencepatientid: number;
+    }>(baselineQuery, baselineParams);
 
-    //console.log("baseline query:", baselineQuery);
-    //console.log("query params:", [initial, ...queryParams]);
-
-    const baselinePatientIds = baselineRows.map(r => r.referencepatientid);
+    const baselinePatientIds = baselineRows.map((r) => r.referencepatientid);
 
     if (baselinePatientIds.length === 0) {
       res.status(200).json({
         message: "No baseline patients found for the given filters.",
         totalRows: 0,
         data: [],
+        questionid,
       });
       return;
     }
 
-    // Step 3: For each option, count how many of those patients had that response at the given term
-    for (let i = 0; i < options.length; i++) {
-      const option = options[i];
+    for (const option of options) {
       if (option === undefined || option === null) continue;
 
       const optionQuery = `
@@ -903,31 +898,29 @@ router.post("/after", async (req: Request, res: Response) => {
           AND rfr.answervalue = $3
           AND f.referencepatientid = ANY($4::int[])
       `;
-      const { rows: optionRows } = await pool.query<{ count: number }>(
+
+      const { rows: optionRows } = await pool.query<{ count: string | number }>(
         optionQuery,
         [questionid, term, option, baselinePatientIds]
       );
 
-
-      const count = optionRows[0]?.count || 0;
+      const count = Number(optionRows[0]?.count ?? 0);
 
       results.push({
         option: option.toString(),
         count,
-        percentage : 0, // Placeholder, will calculate next
+        percentage: 0,
       });
     }
 
-    let totalCount = results.reduce((sum, r) => sum + Number(r.count), 0);
+    const totalCount = results.reduce((sum, r) => sum + Number(r.count), 0);
 
-    // Calculate percentages
-    for (let r of results) {
+    for (const r of results) {
       r.percentage =
         totalCount > 0 ? Math.round((Number(r.count) / totalCount) * 100) : 0;
     }
 
-    // Step 4: Optionally compute median
-    let responsePayload: any = {
+    const responsePayload: any = {
       message: "Data fetched successfully.",
       totalRows: totalCount,
       data: results,
@@ -941,13 +934,15 @@ router.post("/after", async (req: Request, res: Response) => {
 
       const total = sorted.reduce((sum, r) => sum + Number(r.count), 0);
       const midPoint = total / 2;
+
       let cumulative = 0;
       let medianValue: number | null = null;
 
-      for (let i = 0; i < sorted.length; i++) {
-        cumulative += Number(sorted[i].count);
+      for (const item of sorted) {
+        cumulative += Number(item.count);
+
         if (cumulative >= midPoint) {
-          medianValue = Number(sorted[i].option);
+          medianValue = Number(item.option);
           break;
         }
       }
@@ -960,9 +955,8 @@ router.post("/after", async (req: Request, res: Response) => {
     console.error("Error fetching data from registry:", error);
     res.status(500).json({
       message: "Error fetching data from registry.",
-      error: error,
+      error,
     });
-    return;
   }
 });
 

@@ -21,36 +21,51 @@ export const SexCh: Record<string, string> = {
 };
 
 export const Age = {
-  0: "Between 21 and 50 years",
-  1: "51 years and above",
+  0: "Below 50 years",
+  1: "50 years and above",
 };
 
 export const Ethnicity: Record<string, string> = {
   0: "Chinese",
   1: "Malay",
-  2: "Indian",
+  2: "Indian/Others",
 };
 
 export const EthnicityCh: Record<string, string> = {
   0: "华人",
   1: "马来人",
-  2: "印度人",
+  2: "印度人/其他人",
 };
 
-export const BMI = {
-  0: "Normal/Underweight (< 25)",
-  1: "Overweight/Obese (>= 25)",
+export const EthnicityFilter: Record<string, string> = {
+  0: "Chinese",
+  1: "Non-Chinese",
+};
+
+export const EthnicityFilterCh: Record<string, string> = {
+  0: "华人",
+  1: "非华人",
+};
+
+export const BMIFilter: Record<string, string> = {
+  0: "32.5-37.4",
+  1: "37.5+",
 };
 
 export const BMICategory: Record<string, string> = {
-  0: "Normal/Underweight (< 25)",
-  1: "Overweight/Obese (>= 25)",
+  0: "Low CVD Risk (<23.0)",
+  1: "Moderate CVD Risk (23.0 - 27.4)",
+  2: "High CVD Risk (27.5 - 32.4)",
+  3: "Very high CVD Risk (32.5 - 37.4)",
+  4: "Very very high CVD Risk (37.5+)"
 };
 
 export type FilterType = {
-  age?: { range: number };
-  bmi?: { range: number };
-  categories: string[];
+  age?: 0 | 1;
+  bmi?: 0 | 1;
+  sex?: 0 | 1;
+  ethnicity?: 0 | 1;
+
 };
 
 export const Mobility = {
@@ -402,7 +417,7 @@ export type QuestionType = {
 export const Questions: QuestionType[] = [
   { id: 1, code: "EQ5D-MOB", question: "Did you have problems in walking about today?", list: Mobility, description: "Problems in walking", chQuestion: "我四处走动没有困难", chineseDescription: "行走问题", chList: MobilityCh },
   { id: 2, code: "EQ5D-SC", question: "Did you have problems in washing or dressing yourself today?", list: SelfCare, description: "Problems washing or dressing yourself", chQuestion: "我自己洗澡或穿衣没有困难", chineseDescription: "洗澡或穿衣的问题", chList: SelfCareCh },
-  { id: 3, code: "EQ5D-UA", question: "Did you have problems in doing your usual activities today? (e.g. work, study, housework, family or leisure activities)", list: UsualActivities, description: "Problems doing your usual activities (e.g. work, study, housework, family or leisure activities)", chQuestion: "我进行日常活动没有困难", chineseDescription: "日常活动的问题", chList: UsualActivitiesCh },
+  { id: 3, code: "EQ5D-UA", question: "Did you have problems in doing your usual activities today? (e.g. work, study, housework, family or leisure activities)", list: UsualActivities, description: "Problems doing your usual activities", chQuestion: "我进行日常活动没有困难", chineseDescription: "日常活动的问题", chList: UsualActivitiesCh },
   { id: 4, code: "EQ5D-PD", question: "Did you have any pain/discomfort today?", list: PainDiscomfort, description: "Pain/discomfort level", chQuestion: "我没有疼痛或不舒服", chineseDescription: "疼痛/不适程度", chList: PainDiscomfortCh },
   { id: 5, code: "EQ5D-AD", question: "Do you feel anxious/depressed today?", list: AnxietyDepression, description: "Anxiety/depression level", chQuestion: "我没有焦虑或沮丧", chineseDescription: "焦虑/抑郁程度", chList: AnxietyDepressionCh }, 
   { id: 6, code: "BO-BREATHING", question: "Did you experience any breathing problems today? (e.g. shortness of breath, wheezing, coughing, sputum)", list: Breathing, description: "Breathing problems", chQuestion: "今天您有呼吸问题吗？（例如呼吸急促、喘息、咳嗽、痰多等）", chineseDescription: "呼吸问题", chList: BreathingCh },

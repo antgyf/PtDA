@@ -24,9 +24,8 @@ interface ReportPageProps {
 const ReportPage: React.FC<ReportPageProps> = ({ activeTab, currentLang }) => {
   const { form, patient } = useForm();
   const [filters, setFilters] = useState<FilterType>({
-    categories: ["Age Range", "BMI Range"],
-    age: { range: 5 },
-    bmi: { range: 2 },
+    age: 0,
+    bmi: 0,
   });
   const { alert, showAlert } = useAlert();
   const [questionData, setQuestionData] = useState<Record<number, QuestionData>>({});
@@ -158,14 +157,6 @@ const ReportPage: React.FC<ReportPageProps> = ({ activeTab, currentLang }) => {
 
         
         showAlert(currentLang === "en" ? "Loading..." : currentLang === "zh" ? "加载中..." : "Loading...", "info");
-        
-        if (filters.surgeonid && !filters.categories.includes("Surgeon ID")) {
-          filters.categories = [...filters.categories, "Surgeon ID"];
-        }
-
-        if (filters.surgeontitle && !filters.categories.includes("Surgeon Title")) {
-          filters.categories = [...filters.categories, "Surgeon Title"];
-        }
 
         const response = await api.post(
           "/patients/after",
@@ -292,9 +283,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ activeTab, currentLang }) => {
       {radarImage && (
         <PDFReport          
           filters={filters}
-          radarImage={radarImage}
           barChartData={barChartData}
-          renderRadar={false} 
           currentLang={currentLang}
 
         />

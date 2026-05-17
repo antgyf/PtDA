@@ -69,7 +69,7 @@ CREATE TABLE referencepatient (
     age INT NOT NULL,
     bmicategory INT NOT NULL,
     agegroup INT NOT NULL,
-    preoperativebmi NUMERIC(5, 2) NOT NULL
+    bmi NUMERIC(5, 2) NOT NULL
 );
 
 -- Question table
@@ -236,7 +236,7 @@ INSERT INTO referencepatient (
     age,
     bmicategory,
     agegroup,
-    preoperativebmi
+    bmi
 )
 SELECT
     sr."participant_id"::TEXT AS participantid,
@@ -246,7 +246,7 @@ SELECT
 
     sr."BMI category(for PSM)" AS bmicategory,
     sr."Age group (21-50 or 51+)" AS agegroup,
-    sr."Pre-operative BMI(Clinical records)"::NUMERIC(5,2) AS preoperativebmi
+    sr."Pre-operative BMI(Clinical records)"::NUMERIC(5,2) AS bmi
 
 FROM stagingraw sr
 ON CONFLICT (participantid) DO UPDATE
@@ -256,7 +256,7 @@ SET
     age = EXCLUDED.age,
     bmicategory = EXCLUDED.bmicategory,
     agegroup = EXCLUDED.agegroup,
-    preoperativebmi = EXCLUDED.preoperativebmi;
+    bmi = EXCLUDED.bmi;
     
     
 -- Insert into form and formresponse from stagingraw

@@ -12,15 +12,10 @@ import {
 import Table from "./Table/Table";
 import {
   BarChartData,
-  Ethnicity,
-  EthnicityCh,
   FilterType,
-  Sex,
-  SexCh,
 } from "../../../models/patient/patientDetails";
 import { useForm } from "../../../hooks/FormContext";
 import BarChart from "./QuestionWithDynamicOptions/BarChart";
-import { getChSurgeonTitle } from "../../../utils/helper";
 import { Font } from "@react-pdf/renderer";
 
 Font.register({
@@ -86,23 +81,28 @@ const createStyles = (lang: string) =>
       justifyContent: "center",
     },
     nameBoxContainer: {
+      width: 150, // fixed left-side space
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "flex-end",
     },
     nameBox: {
+      width: 130, // fixed box width
+      minHeight: 55, // fixed-ish height but still allows wrapping
       borderWidth: 2,
       borderColor: "black",
       padding: 5,
       fontSize: 10,
       fontFamily: getFontFamily(lang),
+      justifyContent: "center",
+    },
+    chartContainer: {
+      width: "80%",
+      flex: 1,
     },
     pointer: {
       fontSize: 14,
       marginLeft: 5,
-    },
-    chartContainer: {
-      width: "80%",
     },
     noDataContainer: {
       flexDirection: "row",
@@ -120,16 +120,12 @@ const createStyles = (lang: string) =>
 interface PDFReportProps {
   filters: FilterType;
   barChartData: BarChartData[];
-  radarImage: string;
-  renderRadar: boolean;
   currentLang: string;
 }
 
 const PDFReport: React.FC<PDFReportProps> = ({
   filters,
   barChartData,
-  radarImage,
-  renderRadar,
   currentLang,
 }) => {
   const { patient } = useForm();
@@ -151,127 +147,96 @@ const PDFReport: React.FC<PDFReportProps> = ({
 
 
   const getFilterDescription = (filters: FilterType) => {
-    if (!patient) return;
-
     const descriptionParts: React.ReactNode[] = [];
 
-    // Age
-    if (filters.categories.includes("Age Range") && filters.age) {
-      const age = patient.age;
-      const ageRange = filters.age.range;
-
-      const lowerAge = age - ageRange;
-      const upperAge = age + ageRange;
-
+    // Age: 0 = <50, 1 = 50+
+    if (filters.age !== undefined) {
       if (currentLang === "en") {
         descriptionParts.push(
           <>
-            <Text style={styles.boldText}>Age</Text> (between {lowerAge} and {upperAge})
+            <Text style={styles.boldText}>Age</Text>{" "}
+            ({filters.age === 0 ? "below 50 years" : "50 years and above"})
           </>
         );
       } else if (currentLang === "zh") {
         descriptionParts.push(
           <>
-            <Text style={styles.boldText}>年龄</Text> (在{lowerAge}到{upperAge}之间)
+            <Text style={styles.boldText}>年龄</Text>
+            （{filters.age === 0 ? "50岁以下" : "50岁及以上"}）
           </>
         );
       }
     }
 
-    // BMI
-    if (filters.categories.includes("BMI Range") && filters.bmi) {
-      const bmiNum = Number(patient.bmi);
-      const rangeNum = Number(filters.bmi.range);
-
-      const lower = (Math.floor((bmiNum - rangeNum) * 100) / 100).toFixed(1);
-      const upper = (Math.ceil((bmiNum + rangeNum) * 100) / 100).toFixed(1);
+    // BMI: 0 = 32.5–37.4, 1 = 37.5+
+    if (filters.bmi !== undefined) {
       if (currentLang === "en") {
         descriptionParts.push(
           <>
-            <Text style={styles.boldText}>BMI</Text> (between {lower} and {upper})
+            <Text style={styles.boldText}>BMI</Text>{" "}
+            ({filters.bmi === 0 ? "32.5 to 37.4" : "37.5 and above"})
           </>
         );
       } else if (currentLang === "zh") {
         descriptionParts.push(
           <>
-            <Text style={styles.boldText}>体重指数(BMI)</Text> (在{lower}到{upper}之间)
+            <Text style={styles.boldText}>体重指数(BMI)</Text>
+            （{filters.bmi === 0 ? "32.5至37.4" : "37.5及以上"}）
           </>
         );
       }
     }
 
-    // Gender
-    if (filters.categories.includes("Gender")) {
+    // Gender: 0 = Male, 1 = Female
+    if (filters.sex !== undefined) {
       if (currentLang === "en") {
         descriptionParts.push(
           <>
-            <Text style={styles.boldText}>Gender</Text> ({Sex[patient.sex]})
+            <Text style={styles.boldText}>Gender</Text>{" "}
+            ({filters.sex === 0 ? "Male" : "Female"})
           </>
         );
       } else if (currentLang === "zh") {
         descriptionParts.push(
           <>
-            <Text style={styles.boldText}>性别</Text> ({SexCh[patient.sex]})
+            <Text style={styles.boldText}>性别</Text>
+            （{filters.sex === 0 ? "男" : "女"}）
           </>
         );
       }
     }
 
-    // Ethnicity
-    if (filters.categories.includes("Ethnicity")) {
+    // Ethnicity: 0 = Chinese, 1 = Non-Chinese
+    if (filters.ethnicity !== undefined) {
       if (currentLang === "en") {
         descriptionParts.push(
           <>
-            <Text style={styles.boldText}>Ethnicity</Text> ({Ethnicity[patient.ethnicity]})
+            <Text style={styles.boldText}>Ethnicity</Text>{" "}
+            ({filters.ethnicity === 0 ? "Chinese" : "Non-Chinese"})
           </>
         );
       } else if (currentLang === "zh") {
         descriptionParts.push(
           <>
-            <Text style={styles.boldText}>种族</Text> ({EthnicityCh[patient.ethnicity]})
+            <Text style={styles.boldText}>种族</Text>
+            （{filters.ethnicity === 0 ? "华人" : "非华人"}）
           </>
         );
       }
     }
 
-    // Surgeon Title — applies to reference patients, not live patient
-    if (filters.surgeontitle) {
-      if (currentLang === "en") {
-        descriptionParts.push(
-          <>
-            and were operated on by a <Text style={styles.boldText}>{filters.surgeontitle}</Text> surgeon
-          </>
-        );
-      } else if (currentLang === "zh") {
-        descriptionParts.push(
-          <>
-            并由一位 <Text style={styles.boldText}>{getChSurgeonTitle(filters.surgeontitle)}</Text> 外科医生进行手术
-          </>
-        );
-      }
+    if (descriptionParts.length === 0) {
+      return (
+        <Text>
+          {currentLang === "zh"
+            ? "未选择筛选条件"
+            : "no selected filter characteristics"}
+        </Text>
+      );
     }
 
-    // Surgeon ID — applies to reference patients, not live patient
-    if (filters.surgeonid) {
-      if (currentLang === "en") {
-        descriptionParts.push(
-          <>
-            and were operated on by Surgeon with Surgeon ID <Text style={styles.boldText}>{filters.surgeonid}</Text>
-          </>
-        );
-      } else if (currentLang === "zh") {
-        descriptionParts.push(
-          <>
-            并由外科医生ID为 <Text style={styles.boldText}>{filters.surgeonid}</Text> 的外科医生进行手术
-          </>
-        );
-      }
-    }
-
-    // Assemble text
     return (
       <Text>
-        {descriptionParts.length > 0}
         {descriptionParts.map((part, idx) => (
           <React.Fragment key={idx}>
             {idx > 0 && ", "}
@@ -284,7 +249,7 @@ const PDFReport: React.FC<PDFReportProps> = ({
 
   const pdfFileName = `${patient?.patientid}. ${patient?.fullname} Summary Report.pdf`;
 
-  const renderPDFDocument = (radarImage: string) => (
+  const renderPDFDocument = () => (
     <Document title={pdfFileName}>
       {/* Page 1: Bar Charts */}
       <Page size="A4" style={styles.page}>
@@ -341,7 +306,7 @@ const PDFReport: React.FC<PDFReportProps> = ({
                     <>
                       <Text style={{ fontWeight: "bold" }}>
                         {patient?.fullname}
-                      {patient?.sex ? "女士" : "先生"}
+                        {patient?.sex ? "女士" : "先生"}
                       </Text>
                     </>
                   ) : (
@@ -354,11 +319,11 @@ const PDFReport: React.FC<PDFReportProps> = ({
                     </>
                   )}
 
-                  {currentLang === "en" ? "current level is " : "目前在这里"}{" "}
-                  {"\n"}
-                    <Text style={{ fontWeight: "bold" }}>
-                      {data.options[Number(data.initial)]?.label || ""}
-                    </Text>
+                  {currentLang === "en" ? "current level is " : "目前在这里"}{"\n"}
+
+                  <Text style={{ fontWeight: "bold" }}>
+                    {data.options[Number(data.initial)]?.label || ""}
+                  </Text>
                 </Text>
               </View>
             ) : (
@@ -379,73 +344,13 @@ const PDFReport: React.FC<PDFReportProps> = ({
         </View>
       ))}
       </Page>
-      
-      {/* Page 2: Radar Chart + Legend */}
-        {renderRadar && (
-          <Page size="A4" style={styles.page}>
-            {patient && <Table data={patient} currentLang={currentLang} />}
-            <Text style={styles.title}>Patient Overview</Text>
-            <Text style={styles.instruction}>
-              The chart below compares what {getName()} is currently experiencing in
-              the {numPriorities} {numPriorities > 1 ? " areas " : " area "} {getName()} cares most about, against the experience of
-              similar patients 6 months after surgery. Those patients were similar
-              to {getName()}
-              {getFilterDescription(filters)}, and they experienced the same level
-              of problems as {getName()} in those areas before surgery.
-            </Text>
-
-            <View style={{ marginTop: 20, gap: 2 }}>
-              <View style={{ flexDirection: "row" }}>
-                <Text style={{ fontSize: 10, color: "#003f5c" }}>Dark blue: </Text>
-                <Text style={{ fontSize: 10 }}>
-                  The experience of similar patients 6 months after surgery
-                </Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <Text style={{ fontSize: 10, color: "#00BFFF" }}>Light blue: </Text>
-                <Text style={{ fontSize: 10 }}>
-                  current experience of {getName()}
-                </Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <Text style={{ fontSize: 10, color: "green" }}>Green: </Text>
-                <Text style={{ fontSize: 10 }}>no problems</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <Text style={{ fontSize: 10, color: "#90ee90" }}>Light green: </Text>
-                <Text style={{ fontSize: 10 }}>slight problems</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <Text style={{ fontSize: 10, color: "#FFD700" }}>Yellow: </Text>
-                <Text style={{ fontSize: 10 }}>moderate problems</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <Text style={{ fontSize: 10, color: "#FFA500" }}>Orange: </Text>
-                <Text style={{ fontSize: 10 }}>severe problems</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <Text style={{ fontSize: 10, color: "red" }}>Red: </Text>
-                <Text style={{ fontSize: 10 }}>extreme problems</Text>
-              </View>
-            </View>
-
-            <Image
-              src={radarImage}
-              style={{
-                width: "80%",
-                margin: "0 auto",
-                marginTop: 20,
-              }}
-            />
-          </Page>
-        )}
           </Document>
         )
   
   return (
     <div className="w-full flex flex-col justify-center items-center">
       <PDFDownloadLink
-        document={renderPDFDocument(radarImage)}
+        document={renderPDFDocument()}
         fileName={pdfFileName}
         className="btn btn-primary text-xl max-w-7xl mb-2"
       >
@@ -456,7 +361,7 @@ const PDFReport: React.FC<PDFReportProps> = ({
         height="850px"
         style={{ border: "2px solid black", backgroundColor: "white" }}
       >
-        {renderPDFDocument(radarImage)}
+        {renderPDFDocument()}
       </PDFViewer>
     </div>
   );

@@ -225,7 +225,7 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({ term, language, onS
 
               <div className="flex flex-col text-2xl">
                 <span className="font-medium">
-                  {`${q.question.id <= 3 ? q.question.id : q.question.id - 5}. ${
+                  {`${q.question.id}. ${
                     language === "en"
                       ? q.question.question
                       : language === "zh"
@@ -270,35 +270,37 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({ term, language, onS
       )}
 
       <ul className="flex flex-col gap-2">
-        {selectedPriorities.map((id) => {
-          const q = availableQuestions.find(
-            (q) => q.question.id === id
-          );
+        {[...selectedPriorities]
+          .sort((a, b) => a - b)
+          .map((id) => {
+            const q = availableQuestions.find(
+              (q) => q.question.id === id
+            );
 
-          return (
-            <li
-              key={id}
-              className="p-2 rounded bg-green-50 border border-green-200 flex justify-between items-center"
-            >
-              <span className="text-lg">
-                {q && q?.question.id >= 9 ? q?.question.id - 5 : q?.question.id}.{" "}
-                {language === "en"
-                  ? q?.question.description
-                  : q?.question.chineseDescription}
-              </span>
+            return (
+              <li
+                key={id}
+                className="p-2 rounded bg-green-50 border border-green-200 flex justify-between items-center"
+              >
+                <span className="text-lg">
+                  {q?.question.id}.{" "}
+                  {language === "en"
+                    ? q?.question.description
+                    : q?.question.chineseDescription}
+                </span>
 
-              {!isDisabled && (
-                <button
-                  type="button"
-                  onClick={() => handleTogglePriority(id)}
-                  className="text-red-500 text-sm"
-                >
-                  ✕
-                </button>
-              )}
-            </li>
-          );
-        })}
+                {!isDisabled && (
+                  <button
+                    type="button"
+                    onClick={() => handleTogglePriority(id)}
+                    className="text-red-500 text-sm"
+                  >
+                    ✕
+                  </button>
+                )}
+              </li>
+            );
+          })}
       </ul>
 
       

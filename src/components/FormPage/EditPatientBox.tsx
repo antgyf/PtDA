@@ -4,6 +4,7 @@ import { useAlert } from "../../hooks/AlertContext";
 import { useForm } from "../../hooks/FormContext";
 import {
   AddPatientForm,
+  BMICategory,
   Ethnicity,
   Sex,
 } from "../../models/patient/patientDetails";
@@ -22,14 +23,17 @@ const EditPatientBox: React.FC<EditPatientBoxProps> = ({ onClose }) => {
   // Initialize state with patient data (or empty default values)
   const [formData, setFormData] = useState<AddPatientForm>({
     fullname: patient?.fullname || "",
-    sex: patient?.sex?.toString() || "0",
-    ethnicity: patient?.ethnicity?.toString() || "0",
-    age: patient?.age?.toString() || "0",
-    bmi: patient?.bmi?.toString() || "0",
-    height: patient?.height?.toString() || "0",
-    weight: patient?.weight?.toString() || "0",
+    sex: patient?.sex?.toString() || "",
+    ethnicity: patient?.ethnicity?.toString() || "",
+    age: patient?.age?.toString() || "",
+    bmi: patient?.bmi?.toString() || "",
+    height: patient?.height?.toString() || "",
+    weight: patient?.weight?.toString() || "",
+    bmicategory: patient?.bmicategory?.toString() || "",
+    agegroup: patient?.agegroup?.toString() || "",
   });
 
+  // Calculate BMICategory whenever height or weight changes
   useEffect(() => {
     const height = parseFloat(formData.height || "0");
     const weight = parseFloat(formData.weight || "0");
@@ -41,6 +45,37 @@ const EditPatientBox: React.FC<EditPatientBoxProps> = ({ onClose }) => {
       setFormData((prev) => ({ ...prev, bmi: "" }));
     }
   }, [formData.height, formData.weight]);
+
+  useEffect(() => {
+    const bmi = parseFloat(formData.bmi || "0");
+    let bmicategory = "";
+
+    if (bmi > 0 && bmi < 23.0) {
+      bmicategory = "0";
+    } else if (bmi >= 23.0 && bmi < 27.5) {
+      bmicategory = "1";
+    } else if (bmi >= 27.5 && bmi < 32.5) {
+      bmicategory = "2";
+    } else if (bmi >= 32.5 && bmi < 37.5) {
+      bmicategory = "3";
+    } else if (bmi >= 37.5) {
+      bmicategory = "4";
+    }
+
+    setFormData((prev) => ({ ...prev, bmicategory }));
+  }, [formData.bmi]);
+
+  // Calculate AgeGroup whenever age changes
+  useEffect(() => {
+    const age = parseInt(formData.age || "", 10);
+    let agegroup = "";
+
+    if (!Number.isNaN(age)) {
+      agegroup = age < 50 ? "0" : "1";
+    }
+
+    setFormData((prev) => ({ ...prev, agegroup }));
+  }, [formData.age]);
 
   // Handle Input Changes
   const handleInputChange = (
@@ -116,6 +151,7 @@ const EditPatientBox: React.FC<EditPatientBoxProps> = ({ onClose }) => {
             onChange={handleInputChange}
           />
           <TextInput name="bmi" label="BMI" value={formData.bmi} disabled />
+          <TextInput name="bmicategory" label="BMI Category" value={formData.bmicategory ? BMICategory[formData.bmicategory] : ""} disabled />
         </div>
 
         {/* Sex Selection */}

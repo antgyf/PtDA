@@ -52,9 +52,8 @@ const AfterSurgery: React.FC<AfterSurgeryProps> = ({ activeTab, currentLang }) =
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTerm, setSelectedTerm] = useState<number>(1);
   const [filters, setFilters] = useState<FilterType>({
-    categories: ["Age Range", "BMI Range"],
-    age: { range: 5 },
-    bmi: { range: 2 },
+    age: 0,
+    bmi: 0
   });
 
   const termToMonths = (term: number) => {
@@ -78,14 +77,6 @@ const AfterSurgery: React.FC<AfterSurgeryProps> = ({ activeTab, currentLang }) =
         const options = Object.entries(question?.list).map(([key]) =>
           parseInt(key, 10)
         );
-
-        if (filters.surgeonid && !filters.categories.includes("Surgeon ID")) {
-          filters.categories = [...filters.categories, "Surgeon ID"];
-        }
-
-        if (filters.surgeontitle && !filters.categories.includes("Surgeon Title")) {
-          filters.categories = [...filters.categories, "Surgeon Title"];
-        }
 
         const scrollY = window.scrollY; // Save current scroll position
 
@@ -298,7 +289,6 @@ const AfterSurgery: React.FC<AfterSurgeryProps> = ({ activeTab, currentLang }) =
         </article>
         {/* Filter Buttons */}
         <FilterButtonsComponent
-          key={question ? question.id : "no-question"}
           onFilterApply={handleFilterChange}
           activeTab={activeTab}
           currentLang={currentLang}

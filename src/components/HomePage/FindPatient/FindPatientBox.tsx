@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { BMI, Ethnicity, Sex } from "../../../models/patient/patientDetails";
+import { Age, BMIFilter, BMICategory, Ethnicity, Sex } from "../../../models/patient/patientDetails";
 import FilterInput from "../../UI/Form/FilterInput";
 import SearchBar from "./SearchBar";
 import ToggleUp from "../../UI/Button/ToggleUp";
@@ -14,9 +14,10 @@ import BrownButton from "../../UI/Button/BrownButton";
 
 
 interface FilterState {
+  age?: number;
   sex?: number;
   ethnicity?: number;
-  bmi?: number;
+  bmicategory?: number;
 }
 
 interface FindPatientBoxProps {
@@ -54,7 +55,7 @@ const FindPatientBox: React.FC<FindPatientBoxProps> = ({ onClose }) => {
     const { name, value } = e.target;
 
     // Default case for other filters
-    const numericFields = ["ethnicity", "bmi", "sex"];
+    const numericFields = ["age", "sex", "ethnicity", "bmicategory"];
     setFilters((prev) => ({
       ...prev,
       [name]: value
@@ -168,6 +169,13 @@ const FindPatientBox: React.FC<FindPatientBoxProps> = ({ onClose }) => {
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
         <FilterInput
+          label="Age"
+          list={Age}
+          name="age"
+          value={filters.age !== undefined ? filters.age.toString() : ""}
+          onChange={handleFilterChange}
+        />
+        <FilterInput
           label="Sex"
           list={Sex}
           name="sex"
@@ -182,10 +190,14 @@ const FindPatientBox: React.FC<FindPatientBoxProps> = ({ onClose }) => {
           onChange={handleFilterChange}
         />
         <FilterInput
-          label="BMI"
-          list={BMI}
-          name="bmi"
-          value={filters.bmi !== undefined ? filters.bmi.toString() : ""}
+          label="BMI Category"
+          list={BMICategory}
+          name="bmicategory"
+          value={
+            filters.bmicategory !== undefined
+              ? filters.bmicategory.toString()
+              : ""
+          }
           onChange={handleFilterChange}
         />
 
