@@ -4,7 +4,6 @@ import {
   FilterType,
   Questions,
 } from "../models/patient/patientDetails";
-import { Patient } from "../models/patient/patientReport";
 
 export const getRankDescription = (lan: string) => {
   const { form } = useForm();
