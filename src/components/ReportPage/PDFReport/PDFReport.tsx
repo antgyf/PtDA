@@ -1,7 +1,6 @@
 import React from "react";
 import {
   Document,
-  Image,
   Page,
   PDFDownloadLink,
   PDFViewer,

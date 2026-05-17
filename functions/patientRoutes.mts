@@ -634,7 +634,6 @@ router.put("/priorities", async (req: Request, res: Response) => {
   }
 });
 
-
 interface Patient {
   referencepatientid: number;
   age: number;
@@ -653,8 +652,15 @@ interface FilterType {
   bmi?: 0 | 1;
 }
 
-// Change this if Chinese is not stored as 0 in your DB
-const CHINESE_ETHNICITY_CODE = 0;
+const DB_SEX_CODE = {
+  MALE: 1,
+  FEMALE: 2,
+};
+
+const DB_ETHNICITY_CODE = {
+  CHINESE: 1,
+  NON_CHINESE: [2, 3],
+};
 
 const formatConditions = (
   filters: FilterType = {},
@@ -670,7 +676,7 @@ const formatConditions = (
     return `$${paramIndex++}`;
   };
 
-  // Age: 0 = <50, 1 = 50+
+  // Age: frontend 0 = <50, 1 = 50+
   if (filters.age !== undefined) {
     const ageParam = addParam(50);
 
@@ -681,24 +687,36 @@ const formatConditions = (
     }
   }
 
-  // Gender: 0 = Male, 1 = Female
+  // Gender:
+  // frontend 0 = Male  -> DB 1
+  // frontend 1 = Female -> DB 2
   if (filters.sex !== undefined) {
-    const sexParam = addParam(Number(filters.sex));
+    const dbSex =
+      Number(filters.sex) === 0
+        ? DB_SEX_CODE.MALE
+        : DB_SEX_CODE.FEMALE;
+
+    const sexParam = addParam(dbSex);
     conditions.push(`p.sex = ${sexParam}`);
   }
 
-  // Ethnicity: 0 = Chinese, 1 = Non-Chinese
+  // Ethnicity:
+  // frontend 0 = Chinese     -> DB 1
+  // frontend 1 = Non-Chinese -> DB 2 or 3
   if (filters.ethnicity !== undefined) {
-    const chineseParam = addParam(CHINESE_ETHNICITY_CODE);
-
     if (Number(filters.ethnicity) === 0) {
+      const chineseParam = addParam(DB_ETHNICITY_CODE.CHINESE);
       conditions.push(`p.ethnicity = ${chineseParam}`);
     } else {
-      conditions.push(`p.ethnicity <> ${chineseParam}`);
+      const nonChinesePlaceholders = DB_ETHNICITY_CODE.NON_CHINESE.map(
+        (ethnicityCode) => addParam(ethnicityCode)
+      ).join(", ");
+
+      conditions.push(`p.ethnicity IN (${nonChinesePlaceholders})`);
     }
   }
 
-  // BMI: 0 = 32.5–37.4, 1 = 37.5+
+  // BMI: frontend 0 = 32.5–37.4, 1 = 37.5+
   if (filters.bmi !== undefined) {
     if (Number(filters.bmi) === 0) {
       const lowerBmi = addParam(32.5);

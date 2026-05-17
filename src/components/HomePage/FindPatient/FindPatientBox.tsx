@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Age, BMIFilter, BMICategory, Ethnicity, Sex } from "../../../models/patient/patientDetails";
+import { Age, BMICategory, Ethnicity, Sex } from "../../../models/patient/patientDetails";
 import FilterInput from "../../UI/Form/FilterInput";
 import SearchBar from "./SearchBar";
 import ToggleUp from "../../UI/Button/ToggleUp";

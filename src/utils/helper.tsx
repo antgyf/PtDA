@@ -1,31 +1,10 @@
 import React from "react";
 import { useForm } from "../hooks/FormContext";
 import {
-  Ethnicity,
-  EthnicityCh,
   FilterType,
   Questions,
-  Sex,
-  SexCh,
 } from "../models/patient/patientDetails";
 import { Patient } from "../models/patient/patientReport";
-
-export const getChSurgeonTitle = (title: string) => {
-  switch (title) {
-    case "Consultant":
-      return "顾问";
-    case "Associate Consultant":
-      return "副顾问";
-    case "Associate Professor":
-      return "副教授";
-    case "Professor":
-      return "教授";
-    case "Senior Consultant":
-      return "高级顾问";
-    default:
-      return title;
-  }
-};
 
 export const getRankDescription = (lan: string) => {
   const { form } = useForm();
@@ -85,116 +64,99 @@ export const getName = (language: string) => {
   }
 };
 
-export const getFilterDescription = (filters: FilterType, patient: Patient, lan: string) => {
+export const getFilterDescription = (
+  filters: FilterType,
+  patient: Patient,
+  lan: string
+) => {
   const parts: React.ReactNode[] = [];
 
-  if (filters.categories.includes("Age Range") && filters.age) {
+  // Age: 0 = <50, 1 = 50+
+  if (filters.age !== undefined) {
     if (lan === "en") {
       parts.push(
         <>
-          <strong style={{ color: "#1976D2" }}>Age</strong> (between{" "}
-          {patient.age - filters.age.range} and {patient.age + filters.age.range} years)
+          <strong style={{ color: "#1976D2" }}>Age</strong>{" "}
+          ({filters.age === 0 ? "below 50 years" : "50 years and above"})
         </>
       );
     } else if (lan === "zh") {
       parts.push(
         <>
-          <strong style={{ color: "#1976D2" }}>年龄</strong> (在{" "}
-          {patient.age - filters.age.range} 岁和 {patient.age + filters.age.range} 岁之间)
+          <strong style={{ color: "#1976D2" }}>年龄</strong>
+          （{filters.age === 0 ? "50岁以下" : "50岁及以上"}）
         </>
       );
     }
   }
 
-  if (filters.categories.includes("BMI Range") && filters.bmi) {
+  // BMI: 0 = 32.5–37.4, 1 = 37.5+
+  if (filters.bmi !== undefined) {
     if (lan === "en") {
       parts.push(
         <>
-          <strong style={{ color: "#1976D2" }}>BMI</strong> (between{" "}
-          {patient.bmi - filters.bmi.range} and {patient.bmi + filters.bmi.range})
+          <strong style={{ color: "#1976D2" }}>BMI</strong>{" "}
+          ({filters.bmi === 0 ? "32.5–37.4" : "37.5 and above"})
         </>
       );
     } else if (lan === "zh") {
       parts.push(
         <>
-          <strong style={{ color: "#1976D2" }}>体重指数</strong> (在{" "}
-          {patient.bmi - filters.bmi.range} 和 {patient.bmi + filters.bmi.range}之间)
+          <strong style={{ color: "#1976D2" }}>体重指数</strong>
+          （{filters.bmi === 0 ? "32.5至37.4" : "37.5及以上"}）
         </>
       );
     }
   }
 
-  if (filters.categories.includes("Gender")) {
+  // Gender: 0 = Male, 1 = Female
+  if (filters.sex !== undefined) {
     if (lan === "en") {
       parts.push(
         <>
-          <strong style={{ color: "#1976D2" }}>Gender</strong> ({Sex[patient.sex]}
-          )
+          <strong style={{ color: "#1976D2" }}>Gender</strong>{" "}
+          ({filters.sex === 0 ? "Male" : "Female"})
         </>
       );
     } else if (lan === "zh") {
       parts.push(
         <>
-          <strong style={{ color: "#1976D2" }}>性别</strong> ({SexCh[patient.sex]}
-          )
+          <strong style={{ color: "#1976D2" }}>性别</strong>
+          （{filters.sex === 0 ? "男" : "女"}）
         </>
       );
     }
   }
 
-  if (filters.categories.includes("Ethnicity")) {
+  // Ethnicity: 0 = Chinese, 1 = Non-Chinese
+  if (filters.ethnicity !== undefined) {
     if (lan === "en") {
       parts.push(
         <>
-          <strong style={{ color: "#1976D2" }}>Ethnicity</strong> (
-          {Ethnicity[patient.ethnicity]})
+          <strong style={{ color: "#1976D2" }}>Ethnicity</strong>{" "}
+          ({filters.ethnicity === 0 ? "Chinese" : "Non-Chinese"})
         </>
       );
     } else if (lan === "zh") {
       parts.push(
         <>
-          <strong style={{ color: "#1976D2" }}>种族</strong> ({EthnicityCh[patient.ethnicity]})
-        </> 
-      );
-    }
-  }
-
-  if (filters.categories.includes("Surgeon Title")) {
-    if (lan === "en") {
-      parts.push(
-        <>
-          and were operated on by a <strong style={{ color: "#1976D2" }}>{filters.surgeontitle}</strong> surgeon
-        </>
-      );
-    } else if (lan === "zh") {
-      parts.push(
-        <>
-          并由一位 <strong style={{ color: "#1976D2" }}>{filters.surgeontitle ? getChSurgeonTitle(filters.surgeontitle) : ""}</strong> 外科医生进行手术
+          <strong style={{ color: "#1976D2" }}>种族</strong>
+          （{filters.ethnicity === 0 ? "华人" : "非华人"}）
         </>
       );
     }
   }
 
-  if (filters.surgeonid) {
-    if (lan === "en") {
-      parts.push(
-        <>
-          and were operated on by Surgeon <strong style={{ color: "#1976D2" }}>
-          {filters.surgeonid}</strong> 
-        </>
-      );
-    } else if (lan === "zh") {
-      parts.push(
-        <>
-          并由外科医生 <strong style={{ color: "#1976D2" }}>{filters.surgeonid}</strong> 进行手术
-        </>
-      );
-    }
+  if (parts.length === 0) {
+    return (
+      <>
+        {lan === "zh" ? "未选择筛选条件" : "no selected filter characteristics"}
+      </>
+    );
   }
 
   return (
     <>
-      {parts.length > 0}
       {parts.map((part, idx) => (
         <React.Fragment key={idx}>
           {idx > 0 && ", "}

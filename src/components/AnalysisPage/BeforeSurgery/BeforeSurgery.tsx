@@ -50,11 +50,8 @@ const BeforeSurgery: React.FC<BeforeSurgeryProps> = ({ activeTab, currentLang })
   const [, setDescriptionList] = useState<Description[]>([]);
   const [, setGraphData] = useState<GraphData>([]);
   const [filters, setFilters] = useState<FilterType>({
-    categories: ["Age Range", "BMI Range"],
-    age: { range: 5 },
-    bmi: { range: 2 },
-    surgeonid: "",
-    surgeontitle: "",
+    age: 0,
+    bmi: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -73,14 +70,6 @@ const BeforeSurgery: React.FC<BeforeSurgeryProps> = ({ activeTab, currentLang })
 
       try {
         const options = Object.entries(question.list);
-
-        if (filters.surgeonid && !filters.categories.includes("Surgeon ID")) {
-          filters.categories = [...filters.categories, "Surgeon ID"];
-        }
-
-        if (filters.surgeontitle && !filters.categories.includes("Surgeon Title")) {
-          filters.categories = [...filters.categories, "Surgeon Title"];
-        }
 
         const scrollY = window.scrollY; // Save scroll position
         const response = await api.post(
