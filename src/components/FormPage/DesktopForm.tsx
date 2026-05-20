@@ -43,8 +43,8 @@ const DesktopForm: React.FC<DesktopFormProps> = ({
 
       <h4 className="text-3xl font-bold">
         {language === "en"
-          ? "Please answer all questions below."
-          : "请回答以下所有问题。"}
+          ? "Under each heading, please choose the ONE that best describes your health TODAY."
+          : "在每个标题下，请选择最能描述您今天健康状况的选项。"}
       </h4>
 
       <div className="grid grid-cols-1 gap-8 text-base">

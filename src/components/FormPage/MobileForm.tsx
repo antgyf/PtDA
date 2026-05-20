@@ -78,6 +78,12 @@ const MobileForm: React.FC<MobileFormProps> = ({
             : `问题 ${currentIndex + 1} / ${Questions.length}`}
         </h3>
 
+        <h4 className="text-3xl font-bold">
+        {language === "en"
+          ? "Under each heading, please choose the ONE that best describes your health TODAY."
+          : "在每个标题下，请选择最能描述您今天健康状况的选项。"}
+      </h4>
+
         <div
           className={`p-2 rounded ${
             answers[q.code] ? "ring-2 ring-green-500" : ""
