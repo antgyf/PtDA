@@ -189,10 +189,14 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({ term, language, onS
         {availableQuestions.map((q) => (
           <div
             key={q.question.id}
-            className={`p-4 border rounded-xl shadow-sm bg-white flex flex-col gap-2 cursor-pointer transition-all ${
-              selectedPriorities.includes(q.question.id)
-                ? "ring-2 ring-green-500 bg-green-50 border-green-300"
-                : "hover:bg-gray-50 hover:shadow-md"
+            className={`p-4 border rounded-xl shadow-sm flex flex-col gap-2 transition-all ${
+              isDisabled
+                ? selectedPriorities.includes(q.question.id)
+                  ? "bg-gray-100 border-gray-300 opacity-70 cursor-not-allowed"
+                  : "bg-gray-50 border-gray-200 opacity-50 cursor-not-allowed"
+                : selectedPriorities.includes(q.question.id)
+                ? "ring-2 ring-green-500 bg-green-50 border-green-300 cursor-pointer"
+                : "bg-white hover:bg-gray-50 hover:shadow-md cursor-pointer"
             }`}
             onClick={() =>
               !isDisabled && handleTogglePriority(q.question.id)
@@ -222,6 +226,7 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({ term, language, onS
                   </svg>
                 )}
               </div>
+
 
               <div className="flex flex-col text-2xl">
                 <span className="font-medium">
