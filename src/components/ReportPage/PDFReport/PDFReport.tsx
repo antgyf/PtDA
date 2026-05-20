@@ -12,6 +12,9 @@ import Table from "./Table/Table";
 import {
   BarChartData,
   FilterType,
+  getOptionDescription,
+  getOptionDescriptionCh,
+  wrapChineseText,
 } from "../../../models/patient/patientDetails";
 import { useForm } from "../../../hooks/FormContext";
 import BarChart from "./QuestionWithDynamicOptions/BarChart";
@@ -299,7 +302,6 @@ const PDFReport: React.FC<PDFReportProps> = ({
                         {patient?.sex ? "Ms. " : "Mr. "}
                         {patient?.fullname}
                       </Text>
-                      's{" "}
                     </>
                   ) : currentLang === "zh" ? (
                     <>
@@ -314,14 +316,15 @@ const PDFReport: React.FC<PDFReportProps> = ({
                         {patient?.sex ? "Ms. " : "Mr. "}
                         {patient?.fullname}
                       </Text>
-                      's{" "}
                     </>
                   )}
-
-                  {currentLang === "en" ? "current level is " : "目前在这里"}{"\n"}
+                    
+                  {"\n"}
 
                   <Text style={{ fontWeight: "bold" }}>
-                    {data.options[Number(data.initial)]?.label || ""}
+                    {currentLang === "en"
+                      ? getOptionDescription(data.questionid, data.initial)
+                      : wrapChineseText(getOptionDescriptionCh(data.questionid, data.initial))}
                   </Text>
                 </Text>
               </View>

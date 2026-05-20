@@ -415,24 +415,178 @@ export type QuestionType = {
 
 // Actual questions list aligned with DB
 export const Questions: QuestionType[] = [
-  { id: 1, code: "EQ5D-MOB", question: "Did you have problems in walking about today?", list: Mobility, description: "Problems in walking", chQuestion: "我四处走动没有困难", chineseDescription: "行走问题", chList: MobilityCh },
-  { id: 2, code: "EQ5D-SC", question: "Did you have problems in washing or dressing yourself today?", list: SelfCare, description: "Problems washing or dressing yourself", chQuestion: "我自己洗澡或穿衣没有困难", chineseDescription: "洗澡或穿衣的问题", chList: SelfCareCh },
-  { id: 3, code: "EQ5D-UA", question: "Did you have problems in doing your usual activities today? (e.g. work, study, housework, family or leisure activities)", list: UsualActivities, description: "Problems doing your usual activities", chQuestion: "我进行日常活动没有困难", chineseDescription: "日常活动的问题", chList: UsualActivitiesCh },
-  { id: 4, code: "EQ5D-PD", question: "Did you have any pain/discomfort today?", list: PainDiscomfort, description: "Pain/discomfort level", chQuestion: "我没有疼痛或不舒服", chineseDescription: "疼痛/不适程度", chList: PainDiscomfortCh },
-  { id: 5, code: "EQ5D-AD", question: "Do you feel anxious/depressed today?", list: AnxietyDepression, description: "Anxiety/depression level", chQuestion: "我没有焦虑或沮丧", chineseDescription: "焦虑/抑郁程度", chList: AnxietyDepressionCh }, 
-  { id: 6, code: "BO-BREATHING", question: "Did you experience any breathing problems today? (e.g. shortness of breath, wheezing, coughing, sputum)", list: Breathing, description: "Breathing problems", chQuestion: "今天您有呼吸问题吗？（例如呼吸急促、喘息、咳嗽、痰多等）", chineseDescription: "呼吸问题", chList: BreathingCh },
-  { id: 7, code: "BO-SLEEP", question: "Did you have problems sleeping today?", list: Sleep, description: "Sleeping problems", chQuestion: "今天您有睡眠问题吗？", chineseDescription: "睡眠问题", chList: SleepCh },
-  { id: 8, code: "BO-TIREDNESS", question: "Did you feel tired today?", list: Tiredness, description: "Tiredness level", chQuestion: "今天您感到疲劳吗？", chineseDescription: "疲劳程度", chList: TirednessCh },
-  { id: 9, code: "BO-APPEARANCE", question: "Did you have any problems accepting your physical appearance today?", list: PhysicalAppearance, description: "Acceptance of physical appearance", chQuestion: "今天您能接受自己的外貌吗？", chineseDescription: "外貌接受度", chList: PhysicalAppearanceCh },
-  { id: 10, code: "BO-ROMANTIC-INTIMATE", question: "Did you have any problems building or keeping an intimate relationship today?", list: IntimateRelationship, description: "Intimate relationship issues", chQuestion: "今天您在建立或维持亲密关系方面有问题吗？", chineseDescription: "亲密关系问题", chList: IntimateRelationshipCh },
-  { id: 11, code: "BO-DISCRIMINATE-HUMIL", question: "Did you experience discrimination or humiliation today?", list: DiscriminationHumiliation, description: "Discrimination or humiliation", chQuestion: "今天您有受到歧视或侮辱吗？", chineseDescription: "歧视或侮辱", chList:  DiscriminationHumiliationCh },
-  { id: 12, code: "BO-SOCIAL-ACTIVITIES", question: "Did you have any problems participating in social activities today?", list: SocialActivities, description: "Social activity participation", chQuestion: "今天您参加社交活动有问题吗？", chineseDescription: "社交活动问题", chList: SocialActivitiesCh },
-  { id: 13, code: "BO-CONFIDENCE", question: "Did you feel confident about yourself today?", list: SelfConfidence, description: "Self-confidence level", chQuestion: "今天您对自己有信心吗？", chineseDescription: "自信程度", chList: SelfConfidenceCh },
-  { id: 14, code: "BO-BURDEN-OTHERS", question: "Did you feel you were a burden to others today?", list: BurdenToOthers, description: "Burden to others", chQuestion: "今天您觉得自己对别人是负担吗？", chineseDescription: "给他人带来的负担", chList: BurdenToOthersCh },
-  { id: 15, code: "BO-DIET-CONTROL", question: "Did you have any problems with controlling your diet today?", list: DietControl, description: "Diet control issues", chQuestion: "今天您在控制饮食方面有问题吗？", chineseDescription: "饮食控制问题", chList: DietControlCh },
-  { id: 16, code: "BO-FOOD-ENJOYMENT", question: "Did you enjoy food today?", list: FoodEnjoyment, description: "Food enjoyment", chQuestion: "今天您享受食物吗？", chineseDescription: "食物享受", chList: FoodEnjoymentCh },
-  { id: 17, code: "BO-GI-PROBLEMS", question: "Did you experience any gastrointestinal problems today? (e.g. nausea, vomiting, heartburn, bloating, gases, diarrhea, constipation)", list: GastrointestinalProblems, description: "Gastrointestinal problems", chQuestion: "今天您有肠胃问题吗？（例如恶心、呕吐、胃灼热、胀气、腹泻、便秘等）", chineseDescription: "肠胃问题", chList: GastrointestinalProblemsCh }
+  {
+    id: 1,
+    code: "EQ5D-MOB",
+    question: "Mobility",
+    list: Mobility,
+    description: "Mobility",
+    chQuestion: "行动能力",
+    chineseDescription: "行动能力",
+    chList: MobilityCh,
+  },
+  {
+    id: 2,
+    code: "EQ5D-SC",
+    question: "Self-Care",
+    list: SelfCare,
+    description: "Self-Care",
+    chQuestion: "自我照顾",
+    chineseDescription: "自我照顾",
+    chList: SelfCareCh,
+  },
+  {
+    id: 3,
+    code: "EQ5D-UA",
+    question: "Usual Activities",
+    list: UsualActivities,
+    description: "Usual Activities",
+    chQuestion: "日常活动（如工作、学习、家务、家庭或休闲活动）",
+    chineseDescription: "日常活动（如工作、学习、家务、家庭或休闲活动）",
+    chList: UsualActivitiesCh,
+  },
+  {
+    id: 4,
+    code: "EQ5D-PD",
+    question: "Pain/Discomfort",
+    list: PainDiscomfort,
+    description: "Pain/Discomfort",
+    chQuestion: "疼痛或不舒服",
+    chineseDescription: "疼痛或不舒服",
+    chList: PainDiscomfortCh,
+  },
+  {
+    id: 5,
+    code: "EQ5D-AD",
+    question: "Anxiety/Depression",
+    list: AnxietyDepression,
+    description: "Anxiety/Depression",
+    chQuestion: "焦虑或沮丧",
+    chineseDescription: "焦虑或沮丧",
+    chList: AnxietyDepressionCh,
+  },
+  {
+    id: 6,
+    code: "BO-BREATHING",
+    question: "Breathing Problems (e.g. shortness of breath, wheezing, coughing, sputum)",
+    list: Breathing,
+    description: "Breathing Problems (e.g. shortness of breath, wheezing, coughing, sputum)",
+    chQuestion: "呼吸问题（例如呼吸急促、喘息、咳嗽、有痰）",
+    chineseDescription: "呼吸问题（例如呼吸急促、喘息、咳嗽、有痰）",
+    chList: BreathingCh,
+  },
+  {
+    id: 7,
+    code: "BO-SLEEP",
+    question: "Sleep",
+    list: Sleep,
+    description: "Sleep",
+    chQuestion: "睡眠",
+    chineseDescription: "睡眠",
+    chList: SleepCh,
+  },
+  {
+    id: 8,
+    code: "BO-TIREDNESS",
+    question: "Tiredness",
+    list: Tiredness,
+    description: "Tiredness",
+    chQuestion: "疲劳",
+    chineseDescription: "疲劳",
+    chList: TirednessCh,
+  },
+  {
+    id: 9,
+    code: "BO-APPEARANCE",
+    question: "Physical Appearance (e.g. overall appearance, body shape, skin, etc...)",
+    list: PhysicalAppearance,
+    description: "Physical Appearance (e.g. overall appearance, body shape, skin, etc...)",
+    chQuestion: "外貌（例如总体外貌、身材、皮肤等…）",
+    chineseDescription: "外貌（例如总体外貌、身材、皮肤等…）",
+    chList: PhysicalAppearanceCh,
+  },
+  {
+    id: 10,
+    code: "BO-ROMANTIC-INTIMATE",
+    question: "Building or keeping intimate relationship (Including sexual relationship)",
+    list: IntimateRelationship,
+    description: "Building or keeping intimate relationship (Including sexual relationship)",
+    chQuestion: "开始或维持亲密关系（包括性关系）",
+    chineseDescription: "开始或维持亲密关系（包括性关系）",
+    chList: IntimateRelationshipCh,
+  },
+  {
+    id: 11,
+    code: "BO-DISCRIMINATE-HUMIL",
+    question: "Discrimination/Humiliation",
+    list: DiscriminationHumiliation,
+    description: "Discrimination/Humiliation",
+    chQuestion: "歧视或侮辱",
+    chineseDescription: "歧视或侮辱",
+    chList: DiscriminationHumiliationCh,
+  },
+  {
+    id: 12,
+    code: "BO-SOCIAL-ACTIVITIES",
+    question: "Social Activities (e.g. meeting, eating, or doing work with others)",
+    list: SocialActivities,
+    description: "Social Activities (e.g. meeting, eating, or doing work with others)",
+    chQuestion: "社交活动（例如与他人见面、一起吃饭或做事情）",
+    chineseDescription: "社交活动（例如与他人见面、一起吃饭或做事情）",
+    chList: SocialActivitiesCh,
+  },
+  {
+    id: 13,
+    code: "BO-CONFIDENCE",
+    question: "Self-Confidence",
+    list: SelfConfidence,
+    description: "Self-Confidence",
+    chQuestion: "自信",
+    chineseDescription: "自信",
+    chList: SelfConfidenceCh,
+  },
+  {
+    id: 14,
+    code: "BO-BURDEN-OTHERS",
+    question: "Burden to Others",
+    list: BurdenToOthers,
+    description: "Burden to Others",
+    chQuestion: "给别人造成负担",
+    chineseDescription: "给别人造成负担",
+    chList: BurdenToOthersCh,
+  },
+  {
+    id: 15,
+    code: "BO-DIET-CONTROL",
+    question: "Diet Control (e.g. control food portion and type of food)",
+    list: DietControl,
+    description: "Diet Control (e.g. control food portion and type of food)",
+    chQuestion: "饮食控制（例如控制食物的分量及选择食物）",
+    chineseDescription: "饮食控制（例如控制食物的分量及选择食物）",
+    chList: DietControlCh,
+  },
+  {
+    id: 16,
+    code: "BO-FOOD-ENJOYMENT",
+    question: "Food Enjoyment",
+    list: FoodEnjoyment,
+    description: "Food Enjoyment",
+    chQuestion: "享受食物",
+    chineseDescription: "享受食物",
+    chList: FoodEnjoymentCh,
+  },
+  {
+    id: 17,
+    code: "BO-GI-PROBLEMS",
+    question: "Gastrointestinal Problems (e.g. nausea, vomiting, heartburn, bloating, gases, diarrhea, constipation)",
+    list: GastrointestinalProblems,
+    description: "Gastrointestinal Problems (e.g. nausea, vomiting, heartburn, bloating, gases, diarrhea, constipation)",
+    chQuestion: "肠胃问题（例如恶心、呕吐、胃灼热、胀气、腹泻、便秘）",
+    chineseDescription: "肠胃问题（例如恶心、呕吐、胃灼热、胀气、腹泻、便秘）",
+    chList: GastrointestinalProblemsCh,
+  },
 ];
+
 
 export type BarChartData = {
   title: string;
@@ -454,4 +608,104 @@ export type QuestionData = {
     count: string;
     percentage: number;
   }[];
+};
+
+export function getOptionDescription(
+  questionNumber: number,
+  selectedOption: number,
+): string {
+  const question = Questions.find((q) => q.id === questionNumber);
+
+  if (!question) {
+    return `currently has an unknown response.`;
+  }
+
+  const selectedText = question.list[selectedOption];
+
+  if (!selectedText) {
+    return `currently has an invalid response for ${question.description}.`;
+  }
+
+  const issueMap: Record<number, string> = {
+    1: "mobility",
+    2: "self-care",
+    3: "usual activities",
+    4: "pain/discomfort",
+    5: "anxiety/depression",
+    6: "breathing",
+    7: "sleep",
+    8: "tiredness",
+    9: "physical appearance",
+    10: "building or keeping intimate relationships",
+    11: "discrimination/humiliation",
+    12: "social activities",
+    13: "self-confidence",
+    14: "feeling like a burden to others",
+    15: "diet control",
+    16: "food enjoyment",
+    17: "gastrointestinal problems",
+  };
+
+  const issue = issueMap[questionNumber] ?? question.description.toLowerCase();
+
+  const text = selectedText.toLowerCase();
+
+  if (
+    text.includes("no problems") ||
+    text.includes("no pain") ||
+    text.includes("not anxious") ||
+    text.includes("not tired") ||
+    text.includes("confident about myself") ||
+    text.includes("do not burden")
+  ) {
+    return `currently has no problems with ${issue}.`;
+  }
+
+  if (text.includes("slight") || text.includes("slightly")) {
+    return `currently has slight problems with ${issue}.`;
+  }
+
+  if (text.includes("moderate") || text.includes("moderately")) {
+    return `currently has moderate problems with ${issue}.`;
+  }
+
+  if (text.includes("severe") || text.includes("severely") || text.includes("very unconfident")) {
+    return `currently has severe problems with ${issue}.`;
+  }
+
+  if (text.includes("extreme") || text.includes("extremely") || text.includes("unable")) {
+    return `currently has extreme problems with ${issue}.`;
+  }
+
+  return `currently has an unknown level of problems with ${issue}.`;
+}
+
+export function getOptionDescriptionCh(
+  questionNumber: number,
+  selectedOption: number,
+): string {
+  const question = Questions.find((q) => q.id === questionNumber);
+
+  if (!question) {
+    return `目前有未知的回答。`;
+  }
+
+  const selectedText = question.chList[selectedOption];
+
+  if (!selectedText) {
+    return `目前在${question.chineseDescription}方面有无效的回答。`;
+  }
+
+  // Converts first-person questionnaire answer into third-person style sentence
+  // Example: "我进行日常活动有中度的困难" → "目前进行日常活动有中度的困难。"
+  const formattedText = selectedText
+    .replace(/^我的/, "")
+    .replace(/^我自己/, "自己")
+    .replace(/^我/, "");
+
+  return `目前${formattedText}。`;
+}
+
+export const wrapChineseText = (text: string): string => {
+  return text.replace(/([\u4e00-\u9fff])/g, "$1\u200B");
 };
