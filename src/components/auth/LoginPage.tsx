@@ -86,36 +86,46 @@ const LoginPage: React.FC = () => {
 
   return (
     <div
-      className={`w-screen h-screen flex flex-col items-center justify-center overflow-hidden ${
-        auth.isSurgeon ? "bg-neutral" : "bg-secondary"
+      className={`w-screen h-screen flex flex-col items-center justify-center overflow-hidden max-lg:text-gray-900 max-lg:dark:text-gray-900 ${
+        auth.isSurgeon
+          ? "bg-neutral max-lg:dark:bg-neutral"
+          : "bg-secondary max-lg:dark:bg-secondary"
       }`}
     >
       {alert.message && <Alert />}
-      <article className="prose prose-xl text-center py-10">
+
+      <article className="prose prose-xl text-center py-10 max-lg:text-gray-900 max-lg:dark:text-gray-900 max-lg:prose-h1:text-gray-900 max-lg:dark:prose-h1:text-gray-900">
         <h1 className="my-2">PRECEDE-PtDA</h1>
         <h1>{auth.isSurgeon ? "Surgeon" : "Researcher"} Login</h1>
       </article>
-      <form onSubmit={handleSubmitEvent} className="w-full px-2 max-w-sm">
+
+      <form
+        onSubmit={handleSubmitEvent}
+        className="w-full px-2 max-w-sm max-lg:text-gray-900 max-lg:dark:text-gray-900"
+      >
         <TextInput label="Username" name="username" onChange={handleInput} />
+
         <TextInput
           label="Password"
           name="password"
           onChange={handleInput}
           password
         />
+
         <button
           type="submit"
           className={`w-full my-5 py-2 btn text-lg text-white ${
-            auth.isSurgeon ? " btn-primary" : " btn-accent"
+            auth.isSurgeon ? "btn-primary" : "btn-accent"
           }`}
         >
-          <Link className="text-white" to="/home">
-            Log In
-          </Link>
+          Log In
         </button>
       </form>
 
-      <Link className="font-bold underline" to="/signup">
+      <Link
+        className="font-bold underline max-lg:text-gray-900 max-lg:dark:text-gray-900"
+        to="/signup"
+      >
         Don't have an account? Sign up
       </Link>
 
