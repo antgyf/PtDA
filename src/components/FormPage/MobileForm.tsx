@@ -67,7 +67,7 @@ const MobileForm: React.FC<MobileFormProps> = ({
 
   return (
     <form
-      className="flex flex-col h-full justify-between"
+      className="flex flex-col h-full justify-between bg-white text-gray-900 dark:bg-white dark:text-gray-900"
       onSubmit={handleSubmit}
     >
       {/* QUESTION */}
