@@ -127,21 +127,29 @@ const MobileForm: React.FC<MobileFormProps> = ({
 
           {/* Back */}
           {currentIndex > 0 && (
-            <button type="button" onClick={handleBack}>
+            <button
+              type="button"
+              onClick={handleBack}
+              className="px-4 py-2 rounded-md bg-gray-200 text-gray-900 dark:bg-gray-200 dark:text-gray-900 font-medium"
+            >
               {language === "en" ? "Back" : "返回"}
             </button>
           )}
 
             {/* Next / Submit */}
             {currentIndex < Questions.length - 1 ? (
-            <button type="button" onClick={handleNext}>
+            <button
+                type="button"
+                onClick={handleNext}
+                className="px-4 py-2 rounded-md bg-green-500 text-white font-medium"
+              >
                 {language === "en" ? "Next" : "下一步"}
             </button>
             ) : (
             <button
-                type="submit"
-                disabled={isDisabled || (isEditing && isUnchanged)}
-                className={isDisabled ? "opacity-50 cursor-not-allowed" : ""}
+              type="submit"
+              disabled={isDisabled || (isEditing && isUnchanged)}
+              className="px-4 py-2 rounded-md bg-green-600 text-white dark:bg-green-600 dark:text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {isEditing
                 ? language === "en"
@@ -157,7 +165,7 @@ const MobileForm: React.FC<MobileFormProps> = ({
         {isDisabled && !isEditing && (
           <button
             type="button"
-            className="text-green-600 font-medium"
+            className="px-4 py-2 rounded-md bg-green-600 text-white dark:bg-green-600 dark:text-white font-semibold"
             onClick={() => {
               setIsEditing(true);
               setIsDisabled(false);
@@ -171,7 +179,7 @@ const MobileForm: React.FC<MobileFormProps> = ({
         {isEditing && (
           <button
             type="button"
-            className="text-red-500 font-medium"
+            className="px-4 py-2 rounded-md bg-red-600 text-white dark:bg-red-600 dark:text-white font-semibold"
             onClick={() => {
               setAnswers(originalAnswers);
               setIsEditing(false);
