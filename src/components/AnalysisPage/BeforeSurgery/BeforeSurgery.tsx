@@ -155,7 +155,11 @@ const BeforeSurgery: React.FC<BeforeSurgeryProps> = ({ activeTab, currentLang })
   }, [beforeData, question, currentLang]);
 
   if (!form || !patient) {
-    return <div>No patient form found.</div>;
+    return (
+      <div className="w-full bg-white text-gray-900 max-lg:dark:bg-white max-lg:dark:text-gray-900">
+        No patient form found.
+      </div>
+    );
   }
 
 const renderHumanIcons = () => {
@@ -182,7 +186,7 @@ const renderHumanIcons = () => {
         <div className="w-1/5 min-w-[150px] flex justify-start items-center">
           {isPatientHere ? (
             <div className="flex items-center">
-              <div className="bg-white rounded-md px-3 py-2 shadow-md">
+              <div className="bg-white text-gray-900 rounded-md px-3 py-2 shadow-md max-lg:dark:bg-white max-lg:dark:text-gray-900">
                 {getName(currentLang)} {currentLang === "en" ? "is currently here" : currentLang === "zh" ? "当前在这里" : "is currently here"}
               </div>
               <div className="text-4xl ml-2">👉</div>
@@ -203,7 +207,7 @@ const renderHumanIcons = () => {
             >
               {currentLang === "en" ? question.list[item.option] : currentLang === "zh" ? question.chList[item.option] : question.list[item.option]}
             </div>
-            <div className="font-semibold">
+            <div className="font-semibold text-gray-900 max-lg:dark:text-gray-900">
               {item.count} ({String(item.percentage)}%)
             </div>
           </div>
@@ -230,29 +234,32 @@ const renderHumanIcons = () => {
 
 
   return (
-    <div className="w-full rounded-lg">
+    <div className="w-full rounded-lg bg-white text-gray-900 max-lg:dark:bg-white max-lg:dark:text-gray-900">
       {alert.message && <Alert />}
 
       {/* Information Section */}
-      <article className="prose mb-5 max-w-none">
+      <article className="prose mb-5 max-w-none max-lg:text-gray-900 max-lg:dark:text-gray-900 max-lg:prose-h3:text-gray-900 max-lg:dark:prose-h3:text-gray-900 max-lg:prose-p:text-gray-900 max-lg:dark:prose-p:text-gray-900 max-lg:prose-li:text-gray-900 max-lg:dark:prose-li:text-gray-900">
         {currentLang === "en" && (
-          <h3>
+          <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
             The {form.priorities?.length || 0} areas{" "}
             <strong style={{ color: "#1976D2" }}>
               {patient?.sex ? "Ms." : "Mr."} {patient?.fullname}
             </strong>{" "}
             hopes to see improvement in are:
           </h3>
-          )}
-          {currentLang === "zh" && (
-          <h3>
+        )}
+
+        {currentLang === "zh" && (
+          <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
             {form.priorities?.length || 0} 个{" "}
             <strong style={{ color: "#1976D2" }}>
               {patient?.fullname} {patient?.sex ? "女士" : "先生"}
             </strong>{" "}
             希望看到改善的主要方面是：
-              </h3>
-          )}<ul className="text-xl mb-3">
+          </h3>
+        )}
+
+        <ul className="text-xl mb-3 text-gray-900 max-lg:dark:text-gray-900">
           {getRankDescription(currentLang)}
 
           {/* Variable Selection */}
@@ -260,54 +267,83 @@ const renderHumanIcons = () => {
             value={question?.code || ""}
             onChange={(e) => {
               const selectedCode = e.target.value;
-              const foundQuestion = Questions.find(q => q.code === selectedCode);
+              const foundQuestion = Questions.find(
+                (q) => q.code === selectedCode
+              );
               if (foundQuestion) setQuestion(foundQuestion);
             }}
             currentLang={currentLang}
           />
         </ul>
 
-          <div className="text-2xl mb-3">
-            {currentLang === "en" ? "Self-reported Functions of Similar Patients before Surgery" : 
-              currentLang === "zh" ? "相似患者手术前报告的功能" 
-              : "Self-reported Functions of Similar Patients 6 Months before Surgery"}
-          </div>
+        <div className="text-2xl mb-3 text-gray-900 max-lg:dark:text-gray-900">
+          {currentLang === "en"
+            ? "Self-reported Functions of Similar Patients before Surgery"
+            : currentLang === "zh"
+            ? "相似患者手术前报告的功能"
+            : "Self-reported Functions of Similar Patients 6 Months before Surgery"}
+        </div>
       </article>
 
-      <FilterButtonsComponent
-        key={question?.id}
-        onFilterApply={handleFilterChange}
-        activeTab={activeTab}
-        currentLang={currentLang}
-      />
+      <div className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
+        <FilterButtonsComponent
+          key={question?.id}
+          onFilterApply={handleFilterChange}
+          activeTab={activeTab}
+          currentLang={currentLang}
+        />
+      </div>
 
-      <PatientDetail currentLang={currentLang}/>
+      <div className="max-lg:bg-white max-lg:text-gray-900 max-lg:dark:bg-white max-lg:dark:text-gray-900">
+        <PatientDetail currentLang={currentLang} />
+      </div>
 
       {/* Loading/Error State */}
-      {isLoading && <div>Loading data...</div>}
+      {isLoading && (
+        <div className="text-gray-900 max-lg:dark:text-gray-900">
+          Loading data...
+        </div>
+      )}
 
       {/* Description Section */}
       {question && !isLoading && (
-        <div className="bg-secondary p-4 shadow-md">
+        <div className="bg-secondary text-gray-900 p-4 shadow-md max-lg:dark:bg-secondary max-lg:dark:text-gray-900">
           {/* Responsive Container for Text and Chart */}
-          <div className="flex flex-wrap lg:flex-nowrap gap-4 ">
+          <div className="flex flex-wrap lg:flex-nowrap gap-4">
             <div className="w-full">
-              <article className="prose max-w-none">
-                <h3>{currentLang === "en" ? question.question : currentLang === "zh" ? question.chQuestion : question.question}</h3>
-                <p>
+              <article className="prose max-w-none max-lg:text-gray-900 max-lg:dark:text-gray-900 max-lg:prose-h3:text-gray-900 max-lg:dark:prose-h3:text-gray-900 max-lg:prose-p:text-gray-900 max-lg:dark:prose-p:text-gray-900">
+                <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
+                  {currentLang === "en"
+                    ? question.question
+                    : currentLang === "zh"
+                    ? question.chQuestion
+                    : question.question}
+                </h3>
+
+                <p className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
                   {currentLang === "en" && (
-                    <>Below are responses of {beforeData?.totalRows} patients similar to {getName(currentLang)}.{" "}
-                    Those patients are similar to {getName(currentLang)} in {getFilterDescription(filters, currentLang)}.</>
+                    <>
+                      Below are responses of {beforeData?.totalRows} patients
+                      similar to {getName(currentLang)}. Those patients are
+                      similar to {getName(currentLang)} in{" "}
+                      {getFilterDescription(filters, currentLang)}.
+                    </>
                   )}
+
                   {currentLang === "zh" && (
-                    <>以下是{beforeData?.totalRows}名与{getName(currentLang)}相似的患者在手术前的回答。
-                    这些患者与{getName(currentLang)}在{getFilterDescription(filters, currentLang)}方面相似。
+                    <>
+                      以下是{beforeData?.totalRows}名与
+                      {getName(currentLang)}
+                      相似的患者在手术前的回答。 这些患者与
+                      {getName(currentLang)}
+                      在{getFilterDescription(filters, currentLang)}
+                      方面相似。
                     </>
                   )}
                 </p>
               </article>
 
-              <div className="w-full flex flex-row items-start mt-5">
+              <div className="w-full flex flex-row items-start mt-5 text-gray-900 max-lg:dark:text-gray-900">
                 <div>{renderHumanIcons()}</div>
               </div>
             </div>

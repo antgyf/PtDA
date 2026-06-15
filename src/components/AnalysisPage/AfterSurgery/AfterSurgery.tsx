@@ -173,8 +173,17 @@ const AfterSurgery: React.FC<AfterSurgeryProps> = ({ activeTab, currentLang }) =
   };
 
   if (!form || !patient) {
-    return <div>{currentLang === "en" ? "No patient form found." : currentLang === "zh" ? "未找到患者表单。" : "No patient form found."}</div>;
+    return (
+      <div className="w-full bg-white text-gray-900 max-lg:dark:bg-white max-lg:dark:text-gray-900">
+        {currentLang === "en"
+          ? "No patient form found."
+          : currentLang === "zh"
+          ? "未找到患者表单。"
+          : "No patient form found."}
+      </div>
+    );
   }
+
   const renderHumanIcons = () => {
     if (!afterData || !afterData.data || !question) return null;
 
@@ -184,7 +193,7 @@ const AfterSurgery: React.FC<AfterSurgeryProps> = ({ activeTab, currentLang }) =
         <div className="w-1/5 min-w-[150px] flex justify-start items-center">
           {index == Number(form.responses.find((r) => r.questionid === question.id)?.answervalue) ? (
             <div className="flex items-center">
-              <div className="bg-white rounded-md px-3 py-2 shadow-md">
+              <div className="bg-white text-gray-900 rounded-md px-3 py-2 shadow-md max-lg:dark:bg-white max-lg:dark:text-gray-900">
                 {getName(currentLang)} {currentLang === "en" ? "is currently here" : currentLang === "zh" ? "当前在这里" : "is currently here"}
               </div>
               <div className="text-4xl ml-2">👉</div>
@@ -205,7 +214,7 @@ const AfterSurgery: React.FC<AfterSurgeryProps> = ({ activeTab, currentLang }) =
             >
               {currentLang === "en" ? question.list[item.option] : currentLang === "zh" ? question.chList[item.option] : question.list[item.option]}
             </div>
-            <div>
+            <div className="text-gray-900 max-lg:dark:text-gray-900">
               {item.count} ({String(item.percentage)}%)
             </div>
           </div>
@@ -232,98 +241,141 @@ const AfterSurgery: React.FC<AfterSurgeryProps> = ({ activeTab, currentLang }) =
   };
 
   return (
-    <div className="w-full h-full rounded-md ">
-      <div className="flex flex-col">
+    <div className="w-full h-full rounded-md max-lg:bg-white max-lg:text-gray-900 max-lg:dark:bg-white max-lg:dark:text-gray-900">
+      <div className="flex flex-col max-lg:text-gray-900 max-lg:dark:text-gray-900">
         {alert.message && <Alert />}
+
         {/* Information Section */}
-        <article className="prose mb-5 max-w-none">
-        {currentLang === "en" && (
-          <h3>
-            The {form.priorities?.length || 0} areas{" "}
-            <strong style={{ color: "#1976D2" }}>
-              {patient?.sex ? "Ms." : "Mr."} {patient?.fullname}
-            </strong>{" "}
-            hopes to see improvement in are:
-          </h3>
+        <article className="prose mb-5 max-w-none max-lg:text-gray-900 max-lg:dark:text-gray-900 max-lg:prose-h3:text-gray-900 max-lg:dark:prose-h3:text-gray-900 max-lg:prose-p:text-gray-900 max-lg:dark:prose-p:text-gray-900 max-lg:prose-li:text-gray-900 max-lg:dark:prose-li:text-gray-900">
+          {currentLang === "en" && (
+            <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
+              The {form.priorities?.length || 0} areas{" "}
+              <strong style={{ color: "#1976D2" }}>
+                {patient?.sex ? "Ms." : "Mr."} {patient?.fullname}
+              </strong>{" "}
+              hopes to see improvement in are:
+            </h3>
           )}
+
           {currentLang === "zh" && (
-          <h3>
-            {form.priorities?.length || 0} 个{" "}
-            <strong style={{ color: "#1976D2" }}>
-              {patient?.fullname} {patient?.sex ? "女士" : "先生"}
-            </strong>{" "}
-            希望看到改善的主要方面是：
-              </h3>
-          )}          <ul className="text-xl mb-3">
+            <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
+              {form.priorities?.length || 0} 个{" "}
+              <strong style={{ color: "#1976D2" }}>
+                {patient?.fullname} {patient?.sex ? "女士" : "先生"}
+              </strong>{" "}
+              希望看到改善的主要方面是：
+            </h3>
+          )}
+
+          <ul className="text-xl mb-3 text-gray-900 max-lg:dark:text-gray-900">
             {getRankDescription(currentLang)}
-              <SelectVariable
-                value={question?.code || ""}
-                onChange={(e) => {
-                  const selectedCode = e.target.value;
-                  const foundQuestion = Questions.find(q => q.code === selectedCode);
-                  if (foundQuestion) setQuestion(foundQuestion);
-                }}
-                currentLang={currentLang}
-          />
 
-              <select
-                className="select select-bordered w-full max-w-xs text-xl"
-                value={selectedTerm}
-                onChange={(e) => setSelectedTerm(Number(e.target.value))}
-              >
-                <option disabled value="">
-                  {currentLang === "en" ? "Select a post-surgery time point" : currentLang === "zh" ? "选择一个术后时间点" : "Select area"}
-                </option>
-                <option value={1}>6 {currentLang === "en" ? "months" : currentLang === "zh" ? "个月" : "months"}</option>
-                <option value={2}>12 {currentLang === "en" ? "months" : currentLang === "zh" ? "个月" : "months"}</option>
-                <option value={3}>24 {currentLang === "en" ? "months" : currentLang === "zh" ? "个月" : "months"}</option>
-              </select>
-            </ul>
+            <SelectVariable
+              value={question?.code || ""}
+              onChange={(e) => {
+                const selectedCode = e.target.value;
+                const foundQuestion = Questions.find(
+                  (q) => q.code === selectedCode
+                );
+                if (foundQuestion) setQuestion(foundQuestion);
+              }}
+              currentLang={currentLang}
+            />
 
+            <select
+              className="select select-bordered w-full max-w-xs text-xl bg-white text-gray-900 max-lg:dark:bg-white max-lg:dark:text-gray-900"
+              value={selectedTerm}
+              onChange={(e) => setSelectedTerm(Number(e.target.value))}
+            >
+              <option disabled value="">
+                {currentLang === "en"
+                  ? "Select a post-surgery time point"
+                  : currentLang === "zh"
+                  ? "选择一个术后时间点"
+                  : "Select area"}
+              </option>
+              <option value={1}>
+                6 {currentLang === "en" ? "months" : currentLang === "zh" ? "个月" : "months"}
+              </option>
+              <option value={2}>
+                12 {currentLang === "en" ? "months" : currentLang === "zh" ? "个月" : "months"}
+              </option>
+              <option value={3}>
+                24 {currentLang === "en" ? "months" : currentLang === "zh" ? "个月" : "months"}
+              </option>
+            </select>
+          </ul>
 
-            <div className="text-2xl mb-3">
-              {currentLang === "en" ? "Self-reported Functions of Similar Patients after Surgery" : 
-              currentLang === "zh" ? "相似患者手术后报告的功能" 
+          <div className="text-2xl mb-3 text-gray-900 max-lg:dark:text-gray-900">
+            {currentLang === "en"
+              ? "Self-reported Functions of Similar Patients after Surgery"
+              : currentLang === "zh"
+              ? "相似患者手术后报告的功能"
               : "Self-reported Functions of Similar Patients 6 Months after Surgery"}
-            </div>
+          </div>
         </article>
-        {/* Filter Buttons */}
-        <FilterButtonsComponent
-          onFilterApply={handleFilterChange}
-          activeTab={activeTab}
-          currentLang={currentLang}
-        />
 
-        <PatientDetail currentLang={currentLang} />
+        {/* Filter Buttons */}
+        <div className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
+          <FilterButtonsComponent
+            onFilterApply={handleFilterChange}
+            activeTab={activeTab}
+            currentLang={currentLang}
+          />
+        </div>
+
+        <div className="max-lg:bg-white max-lg:text-gray-900 max-lg:dark:bg-white max-lg:dark:text-gray-900">
+          <PatientDetail currentLang={currentLang} />
+        </div>
       </div>
 
       {/* Loading, Error, or Graph Section */}
       {isLoading ? (
-        <div>Loading data...</div>
+        <div className="text-gray-900 max-lg:dark:text-gray-900">
+          Loading data...
+        </div>
       ) : (
         question && (
-          <div className="bg-secondary p-4 shadow-md">
+          <div className="bg-secondary text-gray-900 p-4 shadow-md max-lg:dark:bg-secondary max-lg:dark:text-gray-900">
             {/* Responsive Container for Text and Chart */}
-            <div className="flex flex-wrap lg:flex-nowrap gap-4 ">
+            <div className="flex flex-wrap lg:flex-nowrap gap-4">
               <div className="w-full">
-                <article className="prose max-w-none">
-                  <h3>{currentLang === "en" ? question.question : currentLang === "zh" ? question.chQuestion : question.question}</h3>
-                  <p>
+                <article className="prose max-w-none max-lg:text-gray-900 max-lg:dark:text-gray-900 max-lg:prose-h3:text-gray-900 max-lg:dark:prose-h3:text-gray-900 max-lg:prose-p:text-gray-900 max-lg:dark:prose-p:text-gray-900">
+                  <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
+                    {currentLang === "en"
+                      ? question.question
+                      : currentLang === "zh"
+                      ? question.chQuestion
+                      : question.question}
+                  </h3>
+
+                  <p className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
                     {currentLang === "en" && (
-                      <>Below are responses of {afterData?.totalRows} patients at {termToMonths(selectedTerm)} months after surgery.{" "}
-                      Those patients are similar to {getName(currentLang)} in {getFilterDescription(filters, currentLang)} before surgery,{" "}
-                      and they experienced the same level of problems as {getName(currentLang)} in this function before surgery.</>
+                      <>
+                        Below are responses of {afterData?.totalRows} patients at{" "}
+                        {termToMonths(selectedTerm)} months after surgery. Those
+                        patients are similar to {getName(currentLang)} in{" "}
+                        {getFilterDescription(filters, currentLang)} before
+                        surgery, and they experienced the same level of problems
+                        as {getName(currentLang)} in this function before surgery.
+                      </>
                     )}
+
                     {currentLang === "zh" && (
-                      <>下面是{afterData?.totalRows}名与{getName(currentLang)}相似的患者在手术后{termToMonths(selectedTerm)}个月的回答。
-                      这些患者手术前与{getName(currentLang)}在{getFilterDescription(filters, currentLang)}方面相似， 并且他们手术前在这项功能方面经历了与 {getName(currentLang)} 相同程度的问题。
+                      <>
+                        下面是{afterData?.totalRows}名与
+                        {getName(currentLang)}相似的患者在手术后
+                        {termToMonths(selectedTerm)}个月的回答。 这些患者手术前与
+                        {getName(currentLang)}在
+                        {getFilterDescription(filters, currentLang)}
+                        方面相似，并且他们手术前在这项功能方面经历了与
+                        {getName(currentLang)}相同程度的问题。
                       </>
                     )}
                   </p>
-
                 </article>
 
-                <div className="w-full flex flex-row items-start mt-5">
+                <div className="w-full flex flex-row items-start mt-5 text-gray-900 max-lg:dark:text-gray-900">
                   <div>{renderHumanIcons()}</div>
                 </div>
               </div>

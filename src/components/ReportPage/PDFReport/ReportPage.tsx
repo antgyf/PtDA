@@ -36,14 +36,26 @@ const ReportPage: React.FC<ReportPageProps> = ({ activeTab, currentLang }) => {
 
   if (!form) {
     return (
-      <>{currentLang === "en" ? "Something went wrong with retrieving patient data. Please try again." : 
-        currentLang === "zh" ? "获取患者数据时出错。请再试一次。" : "Something went wrong with retrieving patient data. Please try again."}</>
+      <div className="w-full h-full bg-white text-gray-900 dark:bg-white dark:text-gray-900">
+        {currentLang === "en"
+          ? "Something went wrong with retrieving patient data. Please try again."
+          : currentLang === "zh"
+          ? "获取患者数据时出错。请再试一次。"
+          : "Something went wrong with retrieving patient data. Please try again."}
+      </div>
     );
   }
 
   if (!form.priorities || form.priorities.length === 0) {
-    return <>{currentLang === "en" ? "No priorities selected. Please go back to the previous page." : 
-      currentLang === "zh" ? "未选择优先事项。请返回上一页。" : "No priorities selected. Please go back to the previous page."}</>;
+    return (
+      <div className="w-full h-full bg-white text-gray-900 dark:bg-white dark:text-gray-900">
+        {currentLang === "en"
+          ? "No priorities selected. Please go back to the previous page."
+          : currentLang === "zh"
+          ? "未选择优先事项。请返回上一页。"
+          : "No priorities selected. Please go back to the previous page."}
+      </div>
+    );
   }
 
   const variables: number[] = form.priorities;
@@ -237,39 +249,51 @@ const ReportPage: React.FC<ReportPageProps> = ({ activeTab, currentLang }) => {
   };
 
   return (
-    <div className="flex flex-col items-start justify-start h-full w-full gap-2">
+    <div className="flex flex-col items-start justify-start h-full w-full gap-2 max-lg:bg-white max-lg:text-gray-900 max-lg:dark:bg-white max-lg:dark:text-gray-900">
       {alert.message && <Alert />}
-      <div className="flex flex-col w-full justify-start mb-1">
-        <article className="prose mb-1 max-w-none">
-          {currentLang === "en" && (
-          <h3>
-            The {form.priorities?.length || 0} areas{" "}
-            <strong style={{ color: "#1976D2" }}>
-              {patient?.sex ? "Ms." : "Mr."} {patient?.fullname}
-            </strong>{" "}
-            hopes to see improvement in are:
-          </h3>
-          )}
-          {currentLang === "zh" && (
-          <h3>
-            {form.priorities?.length || 0} 个{" "}
-            <strong style={{ color: "#1976D2" }}>
-              {patient?.fullname} {patient?.sex ? "女士" : "先生"}
-            </strong>{" "}
-            希望看到改善的主要方面是：
-              </h3>
-          )}
-          <ul className="text-xl mb-3">
-           {getRankDescription(currentLang)}
 
+      <div className="flex flex-col w-full justify-start mb-1 max-lg:text-gray-900 max-lg:dark:text-gray-900">
+        <article className="prose mb-1 max-w-none max-lg:text-gray-900 max-lg:dark:text-gray-900 max-lg:prose-h3:text-gray-900 max-lg:dark:prose-h3:text-gray-900 max-lg:prose-ul:text-gray-900 max-lg:dark:prose-ul:text-gray-900 max-lg:prose-li:text-gray-900 max-lg:dark:prose-li:text-gray-900">
+          {currentLang === "en" && (
+            <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
+              The {form.priorities?.length || 0} areas{" "}
+              <strong style={{ color: "#1976D2" }}>
+                {patient?.sex ? "Ms." : "Mr."} {patient?.fullname}
+              </strong>{" "}
+              hopes to see improvement in are:
+            </h3>
+          )}
+
+          {currentLang === "zh" && (
+            <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
+              {form.priorities?.length || 0} 个{" "}
+              <strong style={{ color: "#1976D2" }}>
+                {patient?.fullname} {patient?.sex ? "女士" : "先生"}
+              </strong>{" "}
+              希望看到改善的主要方面是：
+            </h3>
+          )}
+
+          <ul className="text-xl mb-3 text-gray-900 dark:text-gray-900">
+            {getRankDescription(currentLang)}
           </ul>
-          <div className="text-2xl mb-3">
-              {currentLang === "en" ? "Self-reported Functions of Similar Patients 6 Months after Surgery" : 
-              currentLang === "zh" ? "相似患者手术后6个月报告的功能" 
+
+          <div className="text-2xl mb-3 text-gray-900 dark:text-gray-900">
+            {currentLang === "en"
+              ? "Self-reported Functions of Similar Patients 6 Months after Surgery"
+              : currentLang === "zh"
+              ? "相似患者手术后6个月报告的功能"
               : "Self-reported Functions of Similar Patients 6 Months after Surgery"}
           </div>
         </article>
-        <FilterButtonsComponent activeTab={activeTab} onFilterApply={handleFilterChange} currentLang={currentLang}/>
+
+        <div className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
+          <FilterButtonsComponent
+            activeTab={activeTab}
+            onFilterApply={handleFilterChange}
+            currentLang={currentLang}
+          />
+        </div>
       </div>
 
       {!radarImage && !isLoading && (
@@ -280,13 +304,15 @@ const ReportPage: React.FC<ReportPageProps> = ({ activeTab, currentLang }) => {
           />
         </div>
       )}
-      {radarImage && (
-        <PDFReport          
-          filters={filters}
-          barChartData={barChartData}
-          currentLang={currentLang}
 
-        />
+      {radarImage && (
+        <div className="w-full max-lg:bg-white max-lg:text-gray-900 max-lg:dark:bg-white max-lg:dark:text-gray-900">
+          <PDFReport
+            filters={filters}
+            barChartData={barChartData}
+            currentLang={currentLang}
+          />
+        </div>
       )}
     </div>
   );
