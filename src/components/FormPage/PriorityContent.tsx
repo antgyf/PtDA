@@ -204,7 +204,7 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({ term, language, onS
           >
             <div className="flex items-start gap-3">
               <div
-                className={`mt-1 h-5 w-5 border-2 rounded flex items-center justify-center ${
+                className={`mt-1 h-5 w-5 shrink-0 border-2 rounded flex items-center justify-center ${
                   selectedPriorities.includes(q.question.id)
                     ? "bg-green-600 border-green-600"
                     : "border-gray-400"
