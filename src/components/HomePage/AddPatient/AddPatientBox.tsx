@@ -222,15 +222,19 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="bg-secondary p-5 rounded-md w-full">
+    <div className="bg-secondary p-5 rounded-md w-full max-lg:dark:bg-secondary max-lg:text-gray-900 max-lg:dark:text-gray-900">
       <div className="flex flex-row justify-between">
-        <article className="prose">
+        <article className="prose max-lg:prose-h2:text-gray-900 max-lg:dark:prose-h2:text-gray-900">
           <h2>Add new patient</h2>
         </article>
+
         <ToggleUp onClose={onClose} />
       </div>
 
-      <form onSubmit={handleSubmitEvent}>
+      <form
+        onSubmit={handleSubmitEvent}
+        className="max-lg:text-gray-900 max-lg:dark:text-gray-900"
+      >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Left Section */}
           <div>
@@ -239,6 +243,7 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
               label="Full name"
               onChange={handleInput}
             />
+
             <TextInput
               name="age"
               label="Age (in years)"
@@ -246,6 +251,7 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
               value={form.age}
               placeholder="0 - 120"
             />
+
             <SelectInput
               name="ethnicity"
               label="Ethnicity"
@@ -264,6 +270,7 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
               value={form.height}
               placeholder="0.5 - 3.0"
             />
+
             <TextInput
               name="weight"
               label="Weight (in kg)"
@@ -271,12 +278,14 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
               value={form.weight}
               placeholder="1 - 300"
             />
+
             <TextInput
               name="bmi"
               label="Body Mass Index"
               value={form.bmi}
               disabled
             />
+
             <TextInput
               name="bmicategory"
               label="BMI Category"
@@ -302,7 +311,7 @@ const AddPatientBox: React.FC<AddPatientBoxProps> = ({ onClose }) => {
             className="btn btn-accent min-w-10 border-0 m-2"
             type="submit"
           >
-            <h4 className="text-white">Add patient</h4>
+            <h4 className="text-white dark:text-white">Add patient</h4>
           </button>
         </div>
       </form>

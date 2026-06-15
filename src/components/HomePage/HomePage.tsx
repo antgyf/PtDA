@@ -15,25 +15,32 @@ const HomePage: React.FC = () => {
   const [findPatient, setFindPatient] = useState(false);
 
   return (
-    <div className="min-h-screen w-screen flex flex-col p-4 mt-10">
+    <div className="min-h-screen w-screen flex flex-col p-4 mt-10 bg-white text-gray-900 dark:bg-white dark:text-gray-900">
       {/* Header Section */}
       <div className="w-full flex flex-row justify-between items-center py-0">
         {alert.message && <Alert />}
-        <article className="prose">
+
+        <article className="prose max-lg:prose-h1:text-gray-900 max-lg:dark:prose-h1:text-gray-900">
           <h1>Home Page</h1>
         </article>
+
         <LogoutButton />
       </div>
+
       {auth.isSurgeon && (
-        <span className="font-bold text-lg">Surgeon ID: {auth.user?.id}</span>
+        <span className="font-bold text-lg text-gray-900 dark:text-gray-900">
+          Surgeon ID: {auth.user?.id}
+        </span>
       )}
+
       {/* Content Section */}
-      <div className="flex flex-col w-full gap-4">
+      <div className="flex flex-col w-full gap-4 text-gray-900 dark:text-gray-900">
         {!addNew ? (
           <AddPatientButton onButtonClick={() => setAddNew(true)} />
         ) : (
           <AddPatientBox onClose={() => setAddNew(false)} />
         )}
+
         {!findPatient ? (
           <FindPatientButton onButtonClick={() => setFindPatient(true)} />
         ) : (

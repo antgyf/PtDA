@@ -149,16 +149,16 @@ const FindPatientBox: React.FC<FindPatientBoxProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="bg-secondary p-5 mt-2 rounded-md w-full">
+    <div className="bg-secondary p-5 mt-2 rounded-md w-full max-lg:dark:bg-secondary max-lg:text-gray-900 max-lg:dark:text-gray-900">
       <div className="flex flex-row justify-between">
-        <article className="prose">
+        <article className="prose max-lg:prose-h2:text-gray-900 max-lg:prose-h4:text-gray-900 max-lg:dark:prose-h2:text-gray-900 max-lg:dark:prose-h4:text-gray-900">
           <h2>Find patient</h2>
           <h4>Total patients matching filters: {totalPatients}</h4>
         </article>
+
         <ToggleUp onClose={onClose} />
       </div>
 
-      {/* Search Bar */}
       <SearchBar
         query={query}
         onChange={handleNameChange}
@@ -166,8 +166,7 @@ const FindPatientBox: React.FC<FindPatientBoxProps> = ({ onClose }) => {
         onClear={handleClearFilters}
       />
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 max-lg:text-gray-900 max-lg:dark:text-gray-900">
         <FilterInput
           label="Age"
           list={Age}
@@ -175,6 +174,7 @@ const FindPatientBox: React.FC<FindPatientBoxProps> = ({ onClose }) => {
           value={filters.age !== undefined ? filters.age.toString() : ""}
           onChange={handleFilterChange}
         />
+
         <FilterInput
           label="Sex"
           list={Sex}
@@ -182,6 +182,7 @@ const FindPatientBox: React.FC<FindPatientBoxProps> = ({ onClose }) => {
           value={filters.sex !== undefined ? filters.sex.toString() : ""}
           onChange={handleFilterChange}
         />
+
         <FilterInput
           label="Ethnicity"
           list={Ethnicity}
@@ -189,6 +190,7 @@ const FindPatientBox: React.FC<FindPatientBoxProps> = ({ onClose }) => {
           value={filters.ethnicity !== undefined ? filters.ethnicity.toString() : ""}
           onChange={handleFilterChange}
         />
+
         <FilterInput
           label="BMI Category"
           list={BMICategory}
@@ -203,12 +205,10 @@ const FindPatientBox: React.FC<FindPatientBoxProps> = ({ onClose }) => {
 
         <BrownButton buttonText="Clear" onButtonClick={handleClearFilters} />
       </div>
-      
 
-      {/* 📋 Patient Table */}
-      <div className="overflow-x-auto">
-        <table className="table">
-          <thead className="text-lg">
+      <div className="overflow-x-auto max-lg:text-gray-900 max-lg:dark:text-gray-900">
+        <table className="table bg-white text-gray-900 dark:bg-white dark:text-gray-900">
+          <thead className="text-lg text-gray-900 dark:text-gray-900">
             <tr>
               <th>Patient ID</th>
               <th>Name</th>
@@ -219,7 +219,8 @@ const FindPatientBox: React.FC<FindPatientBoxProps> = ({ onClose }) => {
               <th>Forms</th>
             </tr>
           </thead>
-          <tbody className="text-[16px]">
+
+          <tbody className="text-[16px] text-gray-900 dark:text-gray-900">
             {patients.map((patient) => (
               <tr key={patient.patientid}>
                 <td>{patient.patientid}</td>
@@ -229,7 +230,7 @@ const FindPatientBox: React.FC<FindPatientBoxProps> = ({ onClose }) => {
                 <td>{Ethnicity[patient.ethnicity]}</td>
                 <td>{patient.bmi}</td>
                 <td
-                  className="underline text-blue-600 cursor-pointer"
+                  className="underline text-blue-700 dark:text-blue-700 cursor-pointer"
                   onClick={() => handleNavigate(patient)}
                 >
                   {patient.hasform ? "View More" : "Add Form"}
@@ -240,24 +241,24 @@ const FindPatientBox: React.FC<FindPatientBoxProps> = ({ onClose }) => {
         </table>
       </div>
 
-      {/* No Patients Found Message */}
       {!patients.length && (
-        <div className="flex justify-center items-center w-full h-full">
+        <div className="flex justify-center items-center w-full h-full text-gray-900 dark:text-gray-900">
           No patient found.
         </div>
       )}
 
-      {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="mt-4 flex justify-between">
+        <div className="mt-4 flex justify-between text-gray-900 dark:text-gray-900">
           <BrownButton
             onButtonClick={handlePrevious}
             disabled={currentPage === 1}
             buttonText="Previous"
           />
+
           <span>
             Page {currentPage} of {totalPages}
           </span>
+
           <BrownButton
             onButtonClick={handleNext}
             disabled={currentPage === totalPages}
