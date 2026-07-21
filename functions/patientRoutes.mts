@@ -2,6 +2,10 @@ import { Router, Request, Response } from "express";
 import pool from "./database.mts";
 import multer from "multer";
 import nodemailer from "nodemailer";
+import {
+  getPriorityValidationError,
+  normalizeStoredPriorities,
+} from "./priorityRules.mts";
 
 const router = Router();
 
@@ -498,7 +502,9 @@ router.get("/priority", async (req: Request, res: Response) => {
      `;
 
     const { rows } = await pool.query<{ questionid: number }>(query, [Number(patientid), Number(term)]);
-    res.status(200).json(rows.map(r => r.questionid));
+    res
+      .status(200)
+      .json(normalizeStoredPriorities(rows.map((row) => row.questionid)));
   } catch (error) {
     console.error("Error fetching priorities:", error);
     res.status(500).json({ message: "Failed to fetch priorities", error });
@@ -508,17 +514,16 @@ router.get("/priority", async (req: Request, res: Response) => {
 router.post("/priorities", async (req: Request, res: Response) => {
   const client = await pool.connect();
   try {
-    const { patientid, term, priorities , maxPriorities } = req.body;
-    // priorities = [1, 5, 8, 10, 12] (array of questionids)
+    const { patientid, term, priorities } = req.body;
+    const validationError = getPriorityValidationError(priorities);
 
     if (
       !patientid ||
       term === undefined ||
-      !Array.isArray(priorities) ||
-      priorities.length > (Number(maxPriorities) || 5)
+      validationError
     ) {
       return res.status(400).json({
-        message: `You must provide exactly ${maxPriorities} priorities for this term.`,
+        message: validationError || "patientid and term are required.",
       });
     }
 
@@ -537,7 +542,7 @@ router.post("/priorities", async (req: Request, res: Response) => {
         .json({ message: "Priorities already exist for this term." });
     }
 
-    // Insert exactly 5 new priorities
+    // Insert the two required priorities and the patient's 1-3 choices.
     for (const qid of priorities) {
       await client.query(
         `INSERT INTO patientpriority (patientid, questionid, term)
@@ -567,23 +572,16 @@ router.put("/priorities", async (req: Request, res: Response) => {
   const client = await pool.connect();
 
   try {
-    const { patientid, term, priorities, maxPriorities } = req.body;
+    const { patientid, term, priorities } = req.body;
+    const validationError = getPriorityValidationError(priorities);
 
     if (
       !patientid ||
       term === undefined ||
-      !Array.isArray(priorities) ||
-      priorities.length > (Number(maxPriorities) || 5)
+      validationError
     ) {
       return res.status(400).json({
-        message: `You must provide at most ${maxPriorities || 5} priorities.`,
-      });
-    }
-
-    const unique = new Set(priorities);
-    if (unique.size !== priorities.length) {
-      return res.status(400).json({
-        message: "Duplicate priorities are not allowed.",
+        message: validationError || "patientid and term are required.",
       });
     }
 
@@ -984,10 +982,23 @@ router.get("/priorities/:patientid/:term", async (req: Request, res: Response) =
 
   try {
     const result = await pool.query(
-      `SELECT q.questionid, q.code, q.text
-       FROM patientpriority pp
-       JOIN question q ON pp.questionid = q.questionid
-       WHERE pp.patientid = $1 AND pp.term = $2`,
+      `WITH additional AS (
+         SELECT pp.questionid
+         FROM patientpriority pp
+         WHERE pp.patientid = $1
+           AND pp.term = $2
+           AND pp.questionid NOT IN (16, 17)
+         ORDER BY pp.questionid
+         LIMIT 3
+       ), selected(questionid) AS (
+         VALUES (16), (17)
+         UNION
+         SELECT questionid FROM additional
+       )
+       SELECT q.questionid, q.code, q.text
+       FROM selected
+       JOIN question q ON selected.questionid = q.questionid
+       ORDER BY q.questionid`,
       [patientid, term]
     );
 

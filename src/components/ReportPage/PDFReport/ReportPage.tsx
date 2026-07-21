@@ -15,6 +15,10 @@ import { useForm } from "../../../hooks/FormContext";
 import { RadarDataPoint } from "../../../models/patient/patientReport";
 import RadarChartCustom from "../RadarChart";
 import Alert from "../../UI/Alert";
+import {
+  hasValidAdditionalPriorityCount,
+  normalizeReportPriorities,
+} from "../../../utils/priorities";
 
 interface ReportPageProps {
   activeTab: "summary" | "before" | "after";
@@ -46,25 +50,27 @@ const ReportPage: React.FC<ReportPageProps> = ({ activeTab, currentLang }) => {
     );
   }
 
-  if (!form.priorities || form.priorities.length === 0) {
+  const reportPriorities = normalizeReportPriorities(form.priorities);
+
+  if (!hasValidAdditionalPriorityCount(reportPriorities)) {
     return (
       <div className="w-full h-full bg-white text-gray-900 dark:bg-white dark:text-gray-900">
         {currentLang === "en"
-          ? "No priorities selected. Please go back to the previous page."
+          ? "Please select 1 to 3 additional priorities on the previous page."
           : currentLang === "zh"
-          ? "未选择优先事项。请返回上一页。"
-          : "No priorities selected. Please go back to the previous page."}
+          ? "请在上一页选择1至3个其他优先事项。"
+          : "Please select 1 to 3 additional priorities on the previous page."}
       </div>
     );
   }
 
-  const variables: number[] = form.priorities;
+  const variables: number[] = reportPriorities;
 
   const getPriorityScore = (question: number): number => {
     return question;
   };
 
-  const questionsWithOptions = (form.priorities || [])
+  const questionsWithOptions = reportPriorities
     .map((qid) => {
       const question = Questions.find((q) => q.id === qid);
       const response = form.responses.find((r) => r.questionid === qid);
@@ -256,7 +262,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ activeTab, currentLang }) => {
         <article className="prose mb-1 max-w-none max-lg:text-gray-900 max-lg:dark:text-gray-900 max-lg:prose-h3:text-gray-900 max-lg:dark:prose-h3:text-gray-900 max-lg:prose-ul:text-gray-900 max-lg:dark:prose-ul:text-gray-900 max-lg:prose-li:text-gray-900 max-lg:dark:prose-li:text-gray-900">
           {currentLang === "en" && (
             <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
-              The {form.priorities?.length || 0} areas{" "}
+              The {reportPriorities.length} areas{" "}
               <strong style={{ color: "#1976D2" }}>
                 {patient?.sex ? "Ms." : "Mr."} {patient?.fullname}
               </strong>{" "}
@@ -266,7 +272,7 @@ const ReportPage: React.FC<ReportPageProps> = ({ activeTab, currentLang }) => {
 
           {currentLang === "zh" && (
             <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
-              {form.priorities?.length || 0} 个{" "}
+              {reportPriorities.length} 个{" "}
               <strong style={{ color: "#1976D2" }}>
                 {patient?.fullname} {patient?.sex ? "女士" : "先生"}
               </strong>{" "}

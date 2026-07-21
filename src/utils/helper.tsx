@@ -4,17 +4,19 @@ import {
   FilterType,
   Questions,
 } from "../models/patient/patientDetails";
+import { normalizeReportPriorities } from "./priorities";
 
 export const getRankDescription = (lan: string) => {
   const { form } = useForm();
+  const reportPriorities = normalizeReportPriorities(form?.priorities);
   let priorityQuestions: string[] | undefined;
   if (lan === "zh") {
-    priorityQuestions = form?.priorities?.map((id) => {
+    priorityQuestions = reportPriorities.map((id) => {
       const description = Questions.find((q) => q.id === id)?.chineseDescription || "N/A";
       return description;
     });
   } else {
-    priorityQuestions = form?.priorities?.map((id) => {
+    priorityQuestions = reportPriorities.map((id) => {
       const description = Questions.find((q) => q.id === id)?.description || "N/A";
       return description;
     });

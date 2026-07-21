@@ -8,6 +8,7 @@ import Alert from "../UI/Alert";
 import PrioritiesContent from "./PriorityContent";
 import { useForm } from "../../hooks/FormContext";
 import LanguageToggle from "../UI/Button/LanguageToggle";
+import { hasValidAdditionalPriorityCount } from "../../utils/priorities";
 
 const PrioritiesPage: React.FC = () => {
   const { alert } = useAlert();
@@ -76,7 +77,7 @@ const PrioritiesPage: React.FC = () => {
           </div>
 
           <div className="flex flex-row gap-4 items-center">
-            {form?.priorities && form?.priorities.length > 0 && (
+            {hasValidAdditionalPriorityCount(form?.priorities) && (
               <ForwardButton
                 target={
                   currentLang === "en"
@@ -110,7 +111,7 @@ const PrioritiesPage: React.FC = () => {
 
           {/* Forward button + Language/Logout menu */}
           <div className="flex flex-row gap-3 items-center">
-            {form?.priorities && form?.priorities.length > 0 && (
+            {hasValidAdditionalPriorityCount(form?.priorities) && (
               <ForwardButton
                 target={
                   currentLang === "en"
