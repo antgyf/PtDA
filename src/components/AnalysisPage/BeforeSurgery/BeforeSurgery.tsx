@@ -20,6 +20,7 @@ import {
 } from "../../../utils/helper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { normalizeReportPriorities } from "../../../utils/priorities";
 
 interface BeforeData {
   totalRows: number;
@@ -241,7 +242,7 @@ const renderHumanIcons = () => {
       <article className="prose mb-5 max-w-none max-lg:text-gray-900 max-lg:dark:text-gray-900 max-lg:prose-h3:text-gray-900 max-lg:dark:prose-h3:text-gray-900 max-lg:prose-p:text-gray-900 max-lg:dark:prose-p:text-gray-900 max-lg:prose-li:text-gray-900 max-lg:dark:prose-li:text-gray-900">
         {currentLang === "en" && (
           <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
-            The {form.priorities?.length || 0} areas{" "}
+            The {normalizeReportPriorities(form.priorities).length} areas{" "}
             <strong style={{ color: "#1976D2" }}>
               {patient?.sex ? "Ms." : "Mr."} {patient?.fullname}
             </strong>{" "}
@@ -251,7 +252,7 @@ const renderHumanIcons = () => {
 
         {currentLang === "zh" && (
           <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
-            {form.priorities?.length || 0} 个{" "}
+            {normalizeReportPriorities(form.priorities).length} 个{" "}
             <strong style={{ color: "#1976D2" }}>
               {patient?.fullname} {patient?.sex ? "女士" : "先生"}
             </strong>{" "}

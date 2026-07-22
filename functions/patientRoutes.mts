@@ -2,10 +2,7 @@ import { Router, Request, Response } from "express";
 import pool from "./database.mts";
 import multer from "multer";
 import nodemailer from "nodemailer";
-import {
-  getPriorityValidationError,
-  normalizeStoredPriorities,
-} from "./priorityRules.mts";
+import { getPriorityValidationError } from "./priorityRules.mts";
 
 const router = Router();
 
@@ -502,9 +499,7 @@ router.get("/priority", async (req: Request, res: Response) => {
      `;
 
     const { rows } = await pool.query<{ questionid: number }>(query, [Number(patientid), Number(term)]);
-    res
-      .status(200)
-      .json(normalizeStoredPriorities(rows.map((row) => row.questionid)));
+    res.status(200).json(rows.map((row) => row.questionid));
   } catch (error) {
     console.error("Error fetching priorities:", error);
     res.status(500).json({ message: "Failed to fetch priorities", error });
@@ -542,7 +537,7 @@ router.post("/priorities", async (req: Request, res: Response) => {
         .json({ message: "Priorities already exist for this term." });
     }
 
-    // Insert the two required priorities and the patient's 1-3 choices.
+    // Insert the patient's 1-3 selected priorities.
     for (const qid of priorities) {
       await client.query(
         `INSERT INTO patientpriority (patientid, questionid, term)
@@ -982,22 +977,10 @@ router.get("/priorities/:patientid/:term", async (req: Request, res: Response) =
 
   try {
     const result = await pool.query(
-      `WITH additional AS (
-         SELECT pp.questionid
-         FROM patientpriority pp
-         WHERE pp.patientid = $1
-           AND pp.term = $2
-           AND pp.questionid NOT IN (16, 17)
-         ORDER BY pp.questionid
-         LIMIT 3
-       ), selected(questionid) AS (
-         VALUES (16), (17)
-         UNION
-         SELECT questionid FROM additional
-       )
-       SELECT q.questionid, q.code, q.text
-       FROM selected
-       JOIN question q ON selected.questionid = q.questionid
+      `SELECT q.questionid, q.code, q.text
+       FROM patientpriority pp
+       JOIN question q ON pp.questionid = q.questionid
+       WHERE pp.patientid = $1 AND pp.term = $2
        ORDER BY q.questionid`,
       [patientid, term]
     );

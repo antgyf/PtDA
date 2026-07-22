@@ -16,7 +16,7 @@ import { RadarDataPoint } from "../../../models/patient/patientReport";
 import RadarChartCustom from "../RadarChart";
 import Alert from "../../UI/Alert";
 import {
-  hasValidAdditionalPriorityCount,
+  hasValidPriorityCount,
   normalizeReportPriorities,
 } from "../../../utils/priorities";
 
@@ -50,19 +50,19 @@ const ReportPage: React.FC<ReportPageProps> = ({ activeTab, currentLang }) => {
     );
   }
 
-  const reportPriorities = normalizeReportPriorities(form.priorities);
-
-  if (!hasValidAdditionalPriorityCount(reportPriorities)) {
+  if (!hasValidPriorityCount(form.priorities)) {
     return (
       <div className="w-full h-full bg-white text-gray-900 dark:bg-white dark:text-gray-900">
         {currentLang === "en"
-          ? "Please select 1 to 3 additional priorities on the previous page."
+          ? "Please select 1 to 3 priorities on the previous page."
           : currentLang === "zh"
-          ? "请在上一页选择1至3个其他优先事项。"
-          : "Please select 1 to 3 additional priorities on the previous page."}
+          ? "请在上一页选择1至3个优先事项。"
+          : "Please select 1 to 3 priorities on the previous page."}
       </div>
     );
   }
+
+  const reportPriorities = normalizeReportPriorities(form.priorities);
 
   const variables: number[] = reportPriorities;
 

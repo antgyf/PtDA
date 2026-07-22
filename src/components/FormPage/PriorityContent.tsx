@@ -5,12 +5,11 @@ import { useAlert } from "../../hooks/AlertContext";
 import { useForm } from "../../hooks/FormContext";
 import { QuestionType, Questions } from "../../models/patient/patientDetails";
 import {
-  getAdditionalPriorities,
-  isMandatoryPriority,
-  MANDATORY_PRIORITY_IDS,
-  MAX_ADDITIONAL_PRIORITIES,
-  MIN_ADDITIONAL_PRIORITIES,
-  normalizeReportPriorities,
+  getUniqueSelectedPriorities,
+  isReportRequiredPriority,
+  MAX_SELECTED_PRIORITIES,
+  MIN_SELECTED_PRIORITIES,
+  REPORT_REQUIRED_PRIORITY_IDS,
 } from "../../utils/priorities";
 import GreenButton from "../UI/Button/GreenButton";
 
@@ -36,21 +35,12 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
   const [availableQuestions, setAvailableQuestions] = useState<
     AvailableQuestion[]
   >([]);
-  const [selectedPriorities, setSelectedPriorities] = useState<number[]>(() =>
-    normalizeReportPriorities()
-  );
+  const [selectedPriorities, setSelectedPriorities] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [maxAdditionalPriorities, setMaxAdditionalPriorities] = useState(
-    MAX_ADDITIONAL_PRIORITIES
-  );
+  const [maxPriorities, setMaxPriorities] = useState(MAX_SELECTED_PRIORITIES);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [originalPriorities, setOriginalPriorities] = useState<number[]>(() =>
-    normalizeReportPriorities()
-  );
-
-  const selectedAdditionalPriorities =
-    getAdditionalPriorities(selectedPriorities);
+  const [originalPriorities, setOriginalPriorities] = useState<number[]>([]);
 
   /** Fetch responses to determine available questions and previous priorities. */
   useEffect(() => {
@@ -81,7 +71,7 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
             if (
               !question ||
               (responseItem.answervalue === 0 &&
-                !isMandatoryPriority(question.id))
+                !isReportRequiredPriority(question.id))
             ) {
               return null;
             }
@@ -89,8 +79,8 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
           })
           .filter((item): item is AvailableQuestion => item !== null);
 
-        // These areas appear even when the patient reported no current problem.
-        MANDATORY_PRIORITY_IDS.forEach((questionId) => {
+        // Keep both report-required areas selectable, even when their answer is 0.
+        REPORT_REQUIRED_PRIORITY_IDS.forEach((questionId) => {
           if (
             !questionsWithAnswers.some((item) => item.question.id === questionId)
           ) {
@@ -107,28 +97,22 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
           }
         });
 
-        questionsWithAnswers.sort((a, b) => {
-          const mandatoryDifference =
-            Number(isMandatoryPriority(b.question.id)) -
-            Number(isMandatoryPriority(a.question.id));
-          return mandatoryDifference || a.question.id - b.question.id;
-        });
+        questionsWithAnswers.sort(
+          (first, second) => first.question.id - second.question.id
+        );
         setAvailableQuestions(questionsWithAnswers);
 
-        const additionalQuestionCount = questionsWithAnswers.filter(
-          (item) => !isMandatoryPriority(item.question.id)
-        ).length;
         const calculatedMaximum = Math.min(
-          MAX_ADDITIONAL_PRIORITIES,
-          additionalQuestionCount
+          MAX_SELECTED_PRIORITIES,
+          questionsWithAnswers.length
         );
-        setMaxAdditionalPriorities(calculatedMaximum);
+        setMaxPriorities(calculatedMaximum);
 
-        if (additionalQuestionCount < MAX_ADDITIONAL_PRIORITIES) {
+        if (questionsWithAnswers.length < MAX_SELECTED_PRIORITIES) {
           showAlert(
             language === "en"
-              ? `Only ${additionalQuestionCount} additional problem area(s) are available for prioritization.`
-              : `只有${additionalQuestionCount}个其他问题方面可供优先排序。`,
+              ? `Only ${questionsWithAnswers.length} problem area(s) are available for prioritization.`
+              : `只有${questionsWithAnswers.length}个问题方面可供优先排序。`,
             "info"
           );
         }
@@ -138,20 +122,20 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
         });
 
         if (existingPriorities.data?.length > 0) {
-          const normalizedPriorities = normalizeReportPriorities(
+          const savedPriorities = getUniqueSelectedPriorities(
             existingPriorities.data
-          );
-          setSelectedPriorities(normalizedPriorities);
-          setOriginalPriorities(normalizedPriorities);
-          setPriorities(normalizedPriorities);
+          ).slice(0, MAX_SELECTED_PRIORITIES);
+          setSelectedPriorities(savedPriorities);
+          setOriginalPriorities(savedPriorities);
+          setPriorities(savedPriorities);
           setIsDisabled(true);
           setIsEditing(false);
           return;
         }
 
-        const initialPriorities = normalizeReportPriorities(
+        const initialPriorities = getUniqueSelectedPriorities(
           form?.term === term ? form.priorities : []
-        );
+        ).slice(0, MAX_SELECTED_PRIORITIES);
         setSelectedPriorities(initialPriorities);
         setOriginalPriorities(initialPriorities);
         setPriorities(initialPriorities);
@@ -167,14 +151,14 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
   }, [patient?.patientid, term]);
 
   const handleTogglePriority = (questionId: number) => {
-    if (isDisabled || isMandatoryPriority(questionId)) return;
+    if (isDisabled) return;
 
     setSelectedPriorities((previous) => {
       if (previous.includes(questionId)) {
         return previous.filter((id) => id !== questionId);
       }
 
-      return getAdditionalPriorities(previous).length < maxAdditionalPriorities
+      return previous.length < maxPriorities
         ? [...previous, questionId]
         : previous;
     });
@@ -185,23 +169,22 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
     if (!patient?.patientid || term === undefined) return;
 
     if (
-      selectedAdditionalPriorities.length < MIN_ADDITIONAL_PRIORITIES ||
-      selectedAdditionalPriorities.length > maxAdditionalPriorities
+      selectedPriorities.length < MIN_SELECTED_PRIORITIES ||
+      selectedPriorities.length > maxPriorities
     ) {
       showAlert(
         language === "en"
-          ? "Please select between 1 and 3 additional areas."
-          : "请选择1至3个其他方面。",
+          ? "Please select between 1 and 3 priorities."
+          : "请选择1至3个优先事项。",
         "error"
       );
       return;
     }
 
-    const normalizedPriorities = normalizeReportPriorities(selectedPriorities);
     const prioritiesData = {
       patientid: patient.patientid,
       term,
-      priorities: normalizedPriorities,
+      priorities: selectedPriorities,
     };
 
     try {
@@ -227,9 +210,8 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
         "success"
       );
 
-      setSelectedPriorities(normalizedPriorities);
-      setPriorities(normalizedPriorities);
-      setOriginalPriorities(normalizedPriorities);
+      setPriorities(selectedPriorities);
+      setOriginalPriorities(selectedPriorities);
       setIsDisabled(true);
       setIsEditing(false);
       onSubmit?.();
@@ -261,24 +243,21 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
       <div className="flex flex-col gap-6">
         <h3 className="max-lg:text-gray-900 max-lg:dark:text-gray-900">
           {language === "en"
-            ? "Food Enjoyment and Gastrointestinal Problems are included automatically. Please select 1 to 3 additional health problems you wish to improve most."
-            : "食物享受和肠胃问题已自动包括。请选择1至3个您最希望改善的其他健康问题。"}
+            ? "Please select 1 to 3 health problems you wish to improve most. Food Enjoyment and Gastrointestinal Problems may be selected and will always appear in the report."
+            : "请选择1至3个您最希望改善的健康问题。您可以选择食物享受和肠胃问题，这两个方面也将始终显示在报告中。"}
         </h3>
 
         <div className="grid grid-cols-1 gap-6">
           {availableQuestions.map((item) => {
             const questionId = item.question.id;
-            const mandatory = isMandatoryPriority(questionId);
             const selected = selectedPriorities.includes(questionId);
 
             return (
               <div
                 key={questionId}
-                aria-disabled={mandatory || isDisabled}
+                aria-disabled={isDisabled}
                 className={`p-4 border rounded-xl shadow-sm flex flex-col gap-2 transition-all max-lg:text-gray-900 max-lg:dark:text-gray-900 ${
-                  mandatory
-                    ? "ring-2 ring-green-600 bg-green-50 border-green-300 cursor-not-allowed max-lg:dark:bg-green-50 max-lg:dark:border-green-300"
-                    : isDisabled
+                  isDisabled
                     ? selected
                       ? "bg-gray-100 border-gray-300 opacity-70 cursor-not-allowed max-lg:dark:bg-gray-100 max-lg:dark:border-gray-300"
                       : "bg-gray-50 border-gray-200 opacity-50 cursor-not-allowed max-lg:dark:bg-gray-50 max-lg:dark:border-gray-200"
@@ -313,22 +292,13 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
                     )}
                   </div>
 
-                  <div className="flex flex-col text-2xl">
-                    <span className="font-medium max-lg:text-gray-900 max-lg:dark:text-gray-900">
-                      {`${questionId}. ${
-                        language === "en"
-                          ? item.question.question
-                          : item.question.chQuestion
-                      }`}
-                    </span>
-                    {mandatory && (
-                      <span className="mt-1 text-base font-semibold text-green-700 max-lg:dark:text-green-700">
-                        {language === "en"
-                          ? "Included automatically - cannot be deselected"
-                          : "已自动包括 - 无法取消选择"}
-                      </span>
-                    )}
-                  </div>
+                  <span className="font-medium max-lg:text-gray-900 max-lg:dark:text-gray-900">
+                    {`${questionId}. ${
+                      language === "en"
+                        ? item.question.question
+                        : item.question.chQuestion
+                    }`}
+                  </span>
                 </div>
 
                 <div className="ml-8 p-2 rounded text-gray-700 max-lg:dark:text-gray-700">
@@ -348,22 +318,17 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
       </div>
 
       <div className="sticky top-6 h-fit bg-white border rounded-xl shadow p-4 max-lg:text-gray-900 max-lg:dark:bg-white max-lg:dark:text-gray-900">
-        <h4 className="font-bold mb-1 max-lg:text-gray-900 max-lg:dark:text-gray-900">
+        <h4 className="font-bold mb-3 max-lg:text-gray-900 max-lg:dark:text-gray-900">
           {language === "en"
-            ? `Areas included in the report (${selectedPriorities.length}/5)`
-            : `报告中包括的方面 (${selectedPriorities.length}/5)`}
+            ? `Selected priorities (${selectedPriorities.length}/${MAX_SELECTED_PRIORITIES})`
+            : `已选择的优先事项 (${selectedPriorities.length}/${MAX_SELECTED_PRIORITIES})`}
         </h4>
-        <p className="mb-3 text-base text-gray-600 max-lg:dark:text-gray-600">
-          {language === "en"
-            ? `Additional choices: ${selectedAdditionalPriorities.length}/${MAX_ADDITIONAL_PRIORITIES}`
-            : `其他选择：${selectedAdditionalPriorities.length}/${MAX_ADDITIONAL_PRIORITIES}`}
-        </p>
 
-        {selectedAdditionalPriorities.length === 0 && (
+        {selectedPriorities.length === 0 && (
           <p className="mb-3 text-gray-500 text-lg max-lg:dark:text-gray-600">
             {language === "en"
-              ? "Select at least one additional area."
-              : "请至少选择一个其他方面。"}
+              ? "Select at least one priority."
+              : "请至少选择一个优先事项。"}
           </p>
         )}
 
@@ -372,7 +337,6 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
             const question =
               availableQuestions.find((item) => item.question.id === id)
                 ?.question || Questions.find((item) => item.id === id);
-            const mandatory = isMandatoryPriority(id);
 
             return (
               <li
@@ -384,14 +348,9 @@ const PrioritiesContent: React.FC<PriorityContentProps> = ({
                   {language === "en"
                     ? question?.description
                     : question?.chineseDescription}
-                  {mandatory && (
-                    <span className="block text-sm font-semibold text-green-700 max-lg:dark:text-green-700">
-                      {language === "en" ? "Required" : "必选"}
-                    </span>
-                  )}
                 </span>
 
-                {!isDisabled && !mandatory && (
+                {!isDisabled && (
                   <button
                     type="button"
                     onClick={() => handleTogglePriority(id)}
